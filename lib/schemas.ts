@@ -8,7 +8,7 @@ export const CommonDataSchema = z.object({
   startDate: z.date().optional(),
   finalDate: z.date().optional(),
 });
-export type CommonDataType = z.infer<typeof CommonDataSchema>;
+export type CommonFormValues = z.infer<typeof CommonDataSchema>;
 
 // ? Оборудование
 export const EquipmentSchema = z.object({
@@ -31,14 +31,19 @@ export type Equipment = z.infer<typeof EquipmentSchema>;
 
 // ? Помещение
 export const PremiseSchema = z.object({
-  id: z.string(),
   name: z.string().min(1, "Необходимо указать название"),
   order: z.coerce.number(),
   area: z.coerce.number().optional(),
-  project_id: z.string(),
+  // project_id: z.string(),
   equipment: z.array(EquipmentSchema).optional(),
 });
 export type Premise = z.infer<typeof PremiseSchema>;
+
+// ? Помещения
+export const PremisesSchema = z.object({
+  rooms: z.array(PremiseSchema).min(1, "Добавьте хотя бы одно помещение"),
+});
+export type PremisesFormValues = z.infer<typeof PremisesSchema>;
 
 // ? Резиденты
 export const ResidentsSchema = z.object({

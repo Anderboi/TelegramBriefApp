@@ -2,23 +2,35 @@
 
 import React from "react";
 import { useState } from "react";
-import StepOne from "./brief-steps/step-one";
+import CommonInfoBlock from "./brief-steps/commoninfo-block";
 import { PDFDownloadLink, StyleSheet } from "@react-pdf/renderer";
 import PDFDocument from "./PDFDocument";
-import { CommonDataType, ResidentsFormValues } from "@/lib/schemas";
+import {
+  CommonFormValues,
+  PremisesFormValues,
+  ResidentsFormValues,
+} from "@/lib/schemas";
 import ResidentsBlock from "./brief-steps/residents-block";
+import PremisesBlock from "./brief-steps/premises-block";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
-  const [commonData, setCommonData] = useState<CommonDataType | null>(null);
+  const [commonData, setCommonData] = useState<CommonFormValues | null>(null);
   const [residentsData, setResidentsData] =
     useState<ResidentsFormValues | null>(null);
+  const [premisesData, setPremisesData] = useState<PremisesFormValues>({
+    rooms: [],
+  });
 
-  const handleNext = (data: CommonDataType | ResidentsFormValues) => {
+  const handleNext = (
+    data: CommonFormValues | ResidentsFormValues | PremisesFormValues
+  ) => {
     if (step === 1) {
-      setCommonData(data as CommonDataType);
+      setCommonData(data as CommonFormValues);
     } else if (step === 2) {
       setResidentsData(data as ResidentsFormValues);
+    } else if (step === 3) {
+      setPremisesData(data as PremisesFormValues);
     }
     setStep(step + 1);
   };
@@ -43,10 +55,11 @@ const BriefMain: React.FC = () => {
 
   return (
     <div className="w-100 p-6 shadow-xl rounded-2xl">
-      {step === 1 && <StepOne onNext={handleNext} />}
+      {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
+      {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
       {/* Add other steps here */}
-      {step > 2 && commonData && residentsData && (
+      {step > 3 && commonData && residentsData && (
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold">
             Вы успешно заполнили техниеское задание на разработку
@@ -60,7 +73,11 @@ const BriefMain: React.FC = () => {
           <PDFDownloadLink
             style={styles.downloadButton}
             document={
-              <PDFDocument data={commonData} residents={residentsData} />
+              <PDFDocument
+                data={commonData}
+                residents={residentsData}
+                premises={premisesData}
+              />
             }
             fileName="project_brief.pdf"
           >

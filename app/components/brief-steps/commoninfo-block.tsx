@@ -11,19 +11,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { CommonDataSchema, CommonDataType } from "@/lib/schemas";
+import { CommonDataSchema, CommonFormValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBlock from "@/components/ui/formblock";
 import { toast } from "sonner";
 
-interface StepOneProps {
-  onNext: (data: CommonDataType) => void;
+interface CommonInfoBlockProps {
+  onNext: (data: CommonFormValues) => void;
 }
 
-const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
+const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   // const [data, setData] = useState<Record<string, string>>({});
 
-  const form = useForm<CommonDataType>({
+  const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
     defaultValues: {
       address: "",
@@ -34,17 +34,17 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem("stepOneData");
+    const savedData = localStorage.getItem("commonInfoBlockData");
     if (savedData) {
       form.reset(JSON.parse(savedData));
     }
   }, [form]);
 
-  const handleSubmit = (data: CommonDataType) => {
+  const handleSubmit = (data: CommonFormValues) => {
     try {
       // Save data to localStorage
-      localStorage.setItem("stepOneData", JSON.stringify(data));
-      toast.success("Информация о проживающих заполнена");
+      localStorage.setItem("commonInfoBlockData", JSON.stringify(data));
+      toast.success("Общая информация по объекту заполнена");
       // Move to the next step
       onNext(data);
     } catch (error) {
@@ -159,4 +159,4 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   );
 };
 
-export default StepOne;
+export default CommonInfoBlock;

@@ -8,7 +8,11 @@ import {
   StyleSheet,
   Font,
 } from "@react-pdf/renderer";
-import { CommonDataType, ResidentsFormValues } from "@/lib/schemas";
+import {
+  CommonFormValues,
+  ResidentsFormValues,
+  PremisesFormValues,
+} from "@/lib/schemas";
 
 Font.register({
   family: "Roboto",
@@ -43,11 +47,16 @@ const styles = StyleSheet.create({
 });
 
 interface PDFDocumentProps {
-  data: CommonDataType;
+  data: CommonFormValues;
   residents: ResidentsFormValues;
+  premises: PremisesFormValues;
 }
 
-const PDFDocument: React.FC<PDFDocumentProps> = ({ data, residents }) => (
+const PDFDocument: React.FC<PDFDocumentProps> = ({
+  data,
+  residents,
+  premises,
+}) => (
   <Document>
     <Page style={styles.page}>
       <View style={styles.section}>
