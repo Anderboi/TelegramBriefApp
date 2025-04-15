@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "short_name": "DesignApp",
+  "name": "Interior Design Project Form",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Fill out the interior design project form"
+}
