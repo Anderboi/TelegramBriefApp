@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { CommonDataSchema, CommonDataType } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBlock from "@/components/ui/formblock";
+import { toast } from "sonner";
 
 interface StepOneProps {
   onNext: (data: CommonDataType) => void;
@@ -28,8 +29,6 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
       address: "",
       area: 0,
       contractNumber: "",
-      startDate: new Date(),
-      finalDate: new Date(),
     },
   });
 
@@ -42,16 +41,22 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   }, [form]);
 
   const handleSubmit = (data: CommonDataType) => {
-    // Save data to localStorage
-    localStorage.setItem("stepOneData", JSON.stringify(data));
-    // Move to the next step
-    onNext(data);
+    try {
+      // Save data to localStorage
+      localStorage.setItem("stepOneData", JSON.stringify(data));
+      toast.success("Информация о проживающих заполнена");
+      // Move to the next step
+      onNext(data);
+    } catch (error) {
+      console.error(error);
+      toast.error("Ошибка при попытке сохранения данных");
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <FormBlock title="">
+        <FormBlock title="Общая информация">
           <FormField
             name="address"
             control={form.control}
@@ -61,7 +66,6 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                 <FormControl>
                   <Input
                     {...field}
-                    readOnly
                     onFocus={(e) => e.target.select()}
                     type="address"
                   />
@@ -79,7 +83,6 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      readOnly
                       onFocus={(e) => e.target.select()}
                       type="address"
                     />
@@ -98,7 +101,6 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      readOnly
                       onFocus={(e) => e.target.select()}
                       type="text"
                     />
@@ -127,12 +129,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="finalDate"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Дата начала проекта</FormLabel>
+                  <FormLabel>Дата окончания проекта</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -146,10 +148,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
         </FormBlock>
-        <Button type="submit">Далее</Button>
+        <div className="flex justify-end">
+          <Button type="submit">Далее</Button>
+        </div>
       </form>
     </Form>
   );
