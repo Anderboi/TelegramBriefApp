@@ -4,7 +4,8 @@ import React from "react";
 import { useState } from "react";
 import useFormData from "../hooks/useFormData";
 import generatePDF from "../utils/generatePDF";
-import StepOne from "./step-one";
+import StepOne from "./brief-steps/step-one";
+import { Button } from "@/components/ui/button";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
@@ -20,13 +21,13 @@ const BriefMain: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="w-100 p-6 shadow-xl rounded-2xl">
       {step === 1 && <StepOne onNext={handleNext} />}
       {/* Add other steps here */}
       {step > 1 && (
         <div>
-          <button className="">Начать заново</button>
-          <button onClick={handleGeneratePDF}>Сгенерировать PDF</button>
+          <Button className="">Начать заново</Button>
+          <Button onClick={handleGeneratePDF}>Сгенерировать PDF</Button>
         </div>
       )}
     </div>
