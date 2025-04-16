@@ -9,8 +9,10 @@ bot.command("start", (ctx) => {
       inline_keyboard: [
         [
           {
-            text: "Open Web App",
-            web_app: { url: "https://your-web-app-url.com" },
+            text: "Открыть форму",
+            web_app: {
+              url: "https://vercel.com/anderbois-projects/telegram-brief-app/FjuTnTZHLNPmpZVMeQ9KQogfYwCp",
+            },
           },
         ],
       ],
@@ -23,3 +25,6 @@ bot.launch();
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).json({ message: "Bot is running" });
 }
+
+
+
