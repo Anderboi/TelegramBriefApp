@@ -59,7 +59,7 @@ const BriefMain: React.FC = () => {
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
       {/* Add other steps here */}
-      {step > 3 && commonData && residentsData && (
+      {step > 3 && commonData && residentsData && premisesData && (
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold">
             Вы успешно заполнили техниеское задание на разработку

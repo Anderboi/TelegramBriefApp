@@ -5,8 +5,8 @@ export const CommonDataSchema = z.object({
   address: z.string().min(1, "Введите адрес"),
   area: z.coerce.number().min(1, "Введите площадь"),
   contractNumber: z.string().optional(),
-  startDate: z.date().optional(),
-  finalDate: z.date().optional(),
+  startDate: z.string().date().optional(),
+  finalDate: z.string().date().optional(),
 });
 export type CommonFormValues = z.infer<typeof CommonDataSchema>;
 

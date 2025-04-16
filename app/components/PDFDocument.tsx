@@ -1,4 +1,3 @@
-// components/PDFDocument.tsx
 import React from "react";
 import {
   Page,
@@ -30,19 +29,32 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 12,
     fontFamily: "Roboto",
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 8,
+    fontWeight: "bold",
     fontFamily: "Roboto",
   },
   text: {
     fontSize: 12,
     marginBottom: 4,
     fontFamily: "Roboto",
+  },
+  infoblock: {
+    flexDirection: "row",
+  },
+  infoblockTitle: {
+    color: "#929292",
+    width: "35%",
+  },
+  stageblock: {
+    flexDirection: "column",
+    gap: "8px",
+    paddingBottom: "24px",
   },
 });
 
@@ -57,33 +69,103 @@ const PDFDocument: React.FC<PDFDocumentProps> = ({
   residents,
   premises,
 }) => (
-  <Document>
+  <Document title="Техническое задание" language="ru">
     <Page style={styles.page}>
       <View style={styles.section}>
         <Text style={styles.title}>Техническое задание</Text>
+        <View style={styles.infoblock}>
+          <Text style={[styles.text, styles.infoblockTitle]}>
+            Номер договора (если есть)
+          </Text>
+          <Text style={styles.text}>{data.contractNumber}</Text>
+        </View>
         <Text style={styles.subtitle}>Общая информация</Text>
-        <Text style={styles.text}>Адрес: {data.address}</Text>
-        <Text style={styles.text}>Площадь: {data.area} sq.m.</Text>
-        <Text style={styles.text}>
-          Номер договора (если есть): {data.contractNumber}
-        </Text>
-        {/* <Text style={styles.text}>
-          Start Date: {new Date(data.startDate).toLocaleDateString()}
-        </Text>
-        <Text style={styles.text}>
-          Final Date: {new Date(data.finalDate).toLocaleDateString()}
-        </Text> */}
+        {/* //! Common Block */}
+        <View style={styles.stageblock}>
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>Клиент</Text>
+            <Text style={styles.text}>{data.area} </Text>
+          </View>
 
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>Адрес</Text>
+            <Text style={styles.text}>{data.address}</Text>
+          </View>
+
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>
+              Площадь объекта
+            </Text>
+            <Text style={styles.text}>{data.area} м²</Text>
+          </View>
+
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>
+              Цель использования
+            </Text>
+            <Text style={styles.text}>{data.area} м²</Text>
+          </View>
+
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>
+              Количество проживающих
+            </Text>
+            <Text style={styles.text}>
+              {residents.adults.length + residents.children.length} чел.
+            </Text>
+          </View>
+
+          <View style={styles.infoblock}>
+            <Text style={[styles.text, styles.infoblockTitle]}>
+              Дата начала проекта
+            </Text>
+            <Text style={styles.text}>
+              {data.startDate || new Date().toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+
+        {/* //! Информация о проживающих */}
         <Text style={styles.subtitle}>Информация о проживающих</Text>
-        {residents.adults.map((person) => (
-          <div>
-            <Text style={styles.text}>Рост: {person.height}</Text>
-            <Text style={styles.text}>Пол: {person.gender}</Text>
-          </div>
-        ))}
-        {residents.children.map((child) => (
-          <Text style={styles.text}>Дети: {child.age}</Text>
-        ))}
+        <View style={styles.stageblock}>
+          {residents.adults.map((person, idx) => (
+            <div key={idx} style={{ gap: "4px" }}>
+              <View style={styles.infoblock}>
+                <Text style={[styles.text, styles.infoblockTitle]}>Рост</Text>
+                <Text style={styles.text}>{person.height}</Text>
+              </View>
+              <View style={styles.infoblock}>
+                <Text style={[styles.text, styles.infoblockTitle]}>Пол</Text>
+                <Text style={styles.text}>
+                  {person.gender === ""
+                    ? ""
+                    : person.gender === "man"
+                    ? "Мужской"
+                    : "Женский"}
+                </Text>
+              </View>
+            </div>
+          ))}
+          {residents.children.map((child, idx) => (
+            <View key={idx} style={styles.infoblock}>
+              <Text style={[styles.text, styles.infoblockTitle]}>Дети</Text>
+              <Text style={styles.text}>{child.age}</Text>
+            </View>
+          ))}
+        </View>
+        {/* //! Состав помещений */}
+        <Text style={styles.subtitle}>Состав помещений</Text>
+        <View style={styles.stageblock}>
+          {premises.rooms.map((room, idx) => (
+            <View key={idx} style={styles.infoblock}>
+              <Text style={[styles.text, styles.infoblockTitle]}>
+                {room.order}
+                {room.name}
+              </Text>
+              <Text style={styles.text}></Text>
+            </View>
+          ))}
+        </View>
       </View>
     </Page>
   </Document>

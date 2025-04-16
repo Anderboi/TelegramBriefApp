@@ -29,6 +29,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
       address: "",
       area: 0,
       contractNumber: "",
+      startDate: new Date().toLocaleDateString(),
     },
   });
 
@@ -41,6 +42,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   }, [form]);
 
   const handleSubmit = (data: CommonFormValues) => {
+    console.log(data);
     try {
       // Save data to localStorage
       localStorage.setItem("commonInfoBlockData", JSON.stringify(data));
@@ -119,10 +121,10 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                   <FormControl>
                     <Input
                       {...field}
-                      value={
-                        field.value &&
-                        new Date(field.value).toISOString().split("T")[0]
-                      }
+                      // value={
+                      //   field.value &&
+                      //   new Date(field.value).toISOString().split("T")[0]
+                      // }
                       type="date"
                     />
                   </FormControl>
