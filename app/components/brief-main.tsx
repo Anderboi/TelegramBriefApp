@@ -54,7 +54,7 @@ const BriefMain: React.FC = () => {
   });
 
   return (
-    <div className="w-100 p-6 shadow-xl rounded-2xl">
+    <div className="sm:w-100 p-4 sm:p-6 sm:shadow-xl sm:rounded-2xl">
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}

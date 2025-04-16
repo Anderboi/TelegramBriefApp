@@ -26,6 +26,10 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
     defaultValues: {
+      clientName: "",
+      clientSurname: "",
+      email: "",
+      phone: "",
       address: "",
       area: 0,
       contractNumber: "",
@@ -59,6 +63,72 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <FormBlock title="Общая информация">
+          <div className="flex items-end space-x-2">
+            <FormField
+              name="clientName"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Имя</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={(e) => e.target.select()}
+                      type="text"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="clientSurname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Фамилия</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={(e) => e.target.select()}
+                      type="text"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            name="email"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Эл. почта</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    onFocus={(e) => e.target.select()}
+                    type="email"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="phone"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Номер телефона</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    onFocus={(e) => e.target.select()}
+                    type="tel"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
           <FormField
             name="address"
             control={form.control}
@@ -75,7 +145,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               </FormItem>
             )}
           />
-          <div className="flex items-end space-x-2">
+          <div className="flex items-end space-x-4">
             <FormField
               control={form.control}
               name="area"
@@ -92,8 +162,6 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex items-end space-x-2">
             <FormField
               control={form.control}
               name="contractNumber"
@@ -111,6 +179,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               )}
             />
           </div>
+
           <div className="flex items-end space-x-2">
             <FormField
               control={form.control}

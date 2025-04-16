@@ -84,7 +84,11 @@ const PDFDocument: React.FC<PDFDocumentProps> = ({
         <View style={styles.stageblock}>
           <View style={styles.infoblock}>
             <Text style={[styles.text, styles.infoblockTitle]}>Клиент</Text>
-            <Text style={styles.text}>{data.area} </Text>
+            <Text style={styles.text}>
+              {data.clientName} {data.clientSurname}
+            </Text>
+            <Text style={styles.text}>{data.email}</Text>
+            <Text style={styles.text}>{data.phone}</Text>
           </View>
 
           <View style={styles.infoblock}>

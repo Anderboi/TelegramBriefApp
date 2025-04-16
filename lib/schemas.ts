@@ -2,6 +2,12 @@ import { z } from "zod";
 
 // ? Общие данные
 export const CommonDataSchema = z.object({
+  clientName: z.string().min(1, "Напишите имя клиента"),
+  clientSurname: z.string().min(1, "Напишите фамилию клиента"),
+  email: z
+    .string()
+    .email("Напишите email куда будет приходить информация по проекту"),
+  phone: z.string().optional(),
   address: z.string().min(1, "Введите адрес"),
   area: z.coerce.number().min(1, "Введите площадь"),
   contractNumber: z.string().optional(),
@@ -55,7 +61,7 @@ export const ResidentsSchema = z.object({
           .positive("Рост должен быть положительным")
           .lte(250, "Рост не может быть больше 250 см"),
         gender: z.string(),
-      }),
+      })
     )
     .min(1, "Должен быть хотя бы один взрослый"),
   children: z.array(
@@ -64,7 +70,7 @@ export const ResidentsSchema = z.object({
         .number({ invalid_type_error: "Введите возраст числом" })
         .positive("Возраст должен быть положительным")
         .lte(18, "Возраст должен быть меньше 18 лет"),
-    }),
+    })
   ),
   hobbies: z.string().optional(),
   healthIssues: z.string().optional(),
@@ -82,7 +88,7 @@ export const ConstructionInfoSchema = z.object({
         material: z.string(),
         rooms: z.array(z.string()),
       })
-      .optional(),
+      .optional()
   ),
   ceiling: z.array(
     z
@@ -91,14 +97,14 @@ export const ConstructionInfoSchema = z.object({
         material: z.string(),
         rooms: z.array(z.string()),
       })
-      .optional(),
+      .optional()
   ),
   walls: z.array(
     z.object({
       id: z.coerce.number(),
       material: z.string(),
       rooms: z.array(z.string()),
-    }),
+    })
   ),
 });
 export type ConstructionFormValues = z.infer<typeof ConstructionInfoSchema>;
@@ -125,7 +131,7 @@ export const EngineeringSystemsSchema = z.object({
         id: z.coerce.number(),
         system: z.string(),
         rooms: z.array(z.string()),
-      }),
+      })
     )
     .optional(),
   // warmFloor: z.boolean().optional(),
@@ -135,7 +141,7 @@ export const EngineeringSystemsSchema = z.object({
         id: z.coerce.number(),
         system: z.string(),
         rooms: z.array(z.string()),
-      }),
+      })
     )
     .optional(),
 
@@ -145,7 +151,7 @@ export const EngineeringSystemsSchema = z.object({
         id: z.coerce.number(),
         system: z.string(),
         rooms: z.array(z.string()),
-      }),
+      })
     )
     .optional(),
 
@@ -155,7 +161,7 @@ export const EngineeringSystemsSchema = z.object({
         id: z.coerce.number(),
         system: z.string(),
         rooms: z.array(z.string()),
-      }),
+      })
     )
     .optional(),
 
@@ -165,7 +171,7 @@ export const EngineeringSystemsSchema = z.object({
         id: z.coerce.number(),
         system: z.string(),
         rooms: z.array(z.string()),
-      }),
+      })
     )
     .optional(),
 });
