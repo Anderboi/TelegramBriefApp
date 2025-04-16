@@ -22,8 +22,20 @@ bot.command("start", (ctx) => {
 
 bot.launch();
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({ message: "Bot is running" });
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "POST") {
+    try {
+      await bot.handleUpdate(req.body, res);
+    } catch (error) {
+      console.error("Error handling update:", error);
+      res.status(500).json({ error: "Error handling update" });
+    }
+  } else {
+    res.status(405).json({ error: "Method not allowed" });
+  }
 }
 
 
