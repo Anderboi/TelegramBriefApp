@@ -84,11 +84,13 @@ const PDFDocument: React.FC<PDFDocumentProps> = ({
         <View style={styles.stageblock}>
           <View style={styles.infoblock}>
             <Text style={[styles.text, styles.infoblockTitle]}>Клиент</Text>
-            <Text style={styles.text}>
-              {data.clientName} {data.clientSurname}
-            </Text>
-            <Text style={styles.text}>{data.email}</Text>
-            <Text style={styles.text}>{data.phone}</Text>
+            <div style={{ flexDirection: "column" }}>
+              <Text style={styles.text}>
+                {data.clientName} {data.clientSurname}
+              </Text>
+              <Text style={styles.text}>{data.email}</Text>
+              <Text style={styles.text}>{data.phone}</Text>
+            </div>
           </View>
 
           <View style={styles.infoblock}>
@@ -163,8 +165,7 @@ const PDFDocument: React.FC<PDFDocumentProps> = ({
           {premises.rooms.map((room, idx) => (
             <View key={idx} style={styles.infoblock}>
               <Text style={[styles.text, styles.infoblockTitle]}>
-                {room.order}
-                {room.name}
+                {room.order}. {room.name}
               </Text>
               <Text style={styles.text}></Text>
             </View>

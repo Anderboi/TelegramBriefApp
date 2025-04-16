@@ -10,9 +10,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { roomList } from "@/lib/templates";
 import {
-  Premise,
   PremisesFormValues,
-  PremiseSchema,
   PremisesSchema,
 } from "@/lib/schemas";
 import FormBlock from "@/components/ui/formblock";
@@ -32,7 +30,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     },
   });
 
-  const watchFields = form.watch();
+  // const watchFields = form.watch();
 
   const {
     fields: roomFields,
@@ -53,12 +51,12 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     }
   }, [form]);
 
-  //? 3. Сохранение данных формы
+
   function onSubmit(data: PremisesFormValues) {
     try {
       // Save data to localStorage
       localStorage.setItem("premisesData", JSON.stringify(data));
-      toast.success("Помещения созданы");
+      toast.success("Помещения сохранены");
       // Move to the next step
       onNext(data);
     } catch (error) {
@@ -77,7 +75,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full flex-col justify-between"
+        className="flex h-full flex-col w-100 justify-between"
       >
         <div className="space-y-4 pb-8">
           <FormBlock title="">

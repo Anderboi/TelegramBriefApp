@@ -7,11 +7,13 @@ import { PDFDownloadLink, StyleSheet } from "@react-pdf/renderer";
 import PDFDocument from "./PDFDocument";
 import {
   CommonFormValues,
+  DemolitionType,
   PremisesFormValues,
   ResidentsFormValues,
 } from "@/lib/schemas";
 import ResidentsBlock from "./brief-steps/residents-block";
 import PremisesBlock from "./brief-steps/premises-block";
+import DemolitionBlock from "./brief-steps/demolition-block";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
@@ -21,9 +23,14 @@ const BriefMain: React.FC = () => {
   const [premisesData, setPremisesData] = useState<PremisesFormValues>({
     rooms: [],
   });
+  const [demolitionData, setDemolitionData] = useState<DemolitionType>();
 
   const handleNext = (
-    data: CommonFormValues | ResidentsFormValues | PremisesFormValues
+    data:
+      | CommonFormValues
+      | ResidentsFormValues
+      | PremisesFormValues
+      | DemolitionType
   ) => {
     if (step === 1) {
       setCommonData(data as CommonFormValues);
@@ -31,6 +38,8 @@ const BriefMain: React.FC = () => {
       setResidentsData(data as ResidentsFormValues);
     } else if (step === 3) {
       setPremisesData(data as PremisesFormValues);
+    } else if (step === 4) {
+      setDemolitionData(data as DemolitionType);
     }
     setStep(step + 1);
   };
@@ -58,35 +67,42 @@ const BriefMain: React.FC = () => {
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
-      {/* Add other steps here */}
-      {step > 3 && commonData && residentsData && premisesData && (
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">
-            Вы успешно заполнили техниеское задание на разработку
-            дизайн-проекта.
-          </h3>
-          <p>Скачайте документ в PDF формате.</p>
-          <small className="pb-20">
-            Некоторое время информация в форме будет храниться у вас на
-            устройстве.
-          </small>
-          <PDFDownloadLink
-            style={styles.downloadButton}
-            document={
-              <PDFDocument
-                data={commonData}
-                residents={residentsData}
-                premises={premisesData}
-              />
-            }
-            fileName="project_brief.pdf"
-          >
-            {({ blob, url, loading, error }) =>
-              loading ? "Документ загрудается..." : "Скачать PDF"
-            }
-          </PDFDownloadLink>
-        </div>
+      {step === 4 && (
+        <DemolitionBlock onNext={handleNext} onBack={handleBack} />
       )}
+      {/* Add other steps here */}
+      {step > 4 &&
+        commonData &&
+        residentsData &&
+        premisesData &&
+        demolitionData && (
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-bold">
+              Вы успешно заполнили техниеское задание на разработку
+              дизайн-проекта.
+            </h3>
+            <p>Скачайте документ в PDF формате.</p>
+            <small className="pb-20">
+              Некоторое время информация в форме будет храниться у вас на
+              устройстве.
+            </small>
+            <PDFDownloadLink
+              style={styles.downloadButton}
+              document={
+                <PDFDocument
+                  data={commonData}
+                  residents={residentsData}
+                  premises={premisesData}
+                />
+              }
+              fileName="project_brief.pdf"
+            >
+              {({ blob, url, loading, error }) =>
+                loading ? "Документ загрудается..." : "Скачать PDF"
+              }
+            </PDFDownloadLink>
+          </div>
+        )}
     </div>
   );
 };
