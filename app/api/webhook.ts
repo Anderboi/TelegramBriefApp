@@ -11,7 +11,7 @@ bot.command("start", (ctx) => {
           {
             text: "Открыть форму",
             web_app: {
-              url: "https://vercel.com/anderbois-projects/telegram-brief-app/FjuTnTZHLNPmpZVMeQ9KQogfYwCp",
+              url: "https://telegram-brief-app.vercel.app/",
             },
           },
         ],
@@ -37,6 +37,5 @@ export default async function handler(
     res.status(405).json({ error: "Method not allowed" });
   }
 }
-
 
 
