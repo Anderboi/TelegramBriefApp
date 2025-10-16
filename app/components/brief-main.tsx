@@ -3,7 +3,7 @@
 import React from "react";
 import { useState } from "react";
 import CommonInfoBlock from "./brief-steps/commoninfo-block";
-import { PDFDownloadLink, StyleSheet } from "@react-pdf/renderer";
+import { PDFDownloadLink, PDFViewer, StyleSheet } from "@react-pdf/renderer";
 import PDFDocument from "./PDFDocument";
 import {
   CommonFormValues,
@@ -101,6 +101,13 @@ const BriefMain: React.FC = () => {
                 loading ? "Документ загрудается..." : "Скачать PDF"
               }
             </PDFDownloadLink>
+        <PDFViewer style={{ width: "100%", height: "500px" }}>
+          <PDFDocument
+            data={commonData}
+            residents={residentsData}
+            premises={premisesData}
+          />
+        </PDFViewer>
           </div>
         )}
     </div>

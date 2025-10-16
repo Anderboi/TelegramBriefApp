@@ -75,7 +75,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full flex-col w-100 justify-between"
+        className="flex w-[calc(100vw-40px)] sm:w-full flex-col justify-between"
       >
         <div className="space-y-4 pb-8">
           <FormBlock title="">
@@ -133,7 +133,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
           </FormBlock>
         </div>
         {/* Кнопка */}
-        <div className="flex justify-between">
+        <div className="flex w-full justify-between">
           <Button
             variant={"secondary"}
             type="button"

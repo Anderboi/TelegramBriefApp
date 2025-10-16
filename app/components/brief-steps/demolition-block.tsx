@@ -63,7 +63,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full w-100 flex-col justify-between"
+        className="flex h-full sm:w-full w-[calc(100vw-40px)] flex-col justify-between"
       >
         <div className="space-y-4 pb-8">
           <FormBlock title="">
