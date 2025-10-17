@@ -137,7 +137,10 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                       <FormItem className="w-full">
                         <FormLabel>Пол</FormLabel>
                         <FormControl>
-                          <Select onValueChange={field.onChange}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Пол" />
                             </SelectTrigger>
@@ -304,7 +307,12 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
         </div>
         {/* Кнопка */}
         <div className="flex justify-between">
-          <Button variant={'secondary'} type="button" onClick={onBack} disabled={false}>
+          <Button
+            variant={"secondary"}
+            type="button"
+            onClick={onBack}
+            disabled={false}
+          >
             Назад
           </Button>
           <Button type="submit">Далее</Button>

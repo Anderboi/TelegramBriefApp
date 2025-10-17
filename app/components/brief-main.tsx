@@ -7,6 +7,7 @@ import { PDFDownloadLink, PDFViewer, StyleSheet } from "@react-pdf/renderer";
 import PDFDocument from "./PDFDocument";
 import {
   CommonFormValues,
+  ConstructionFormValues,
   DemolitionType,
   PremisesFormValues,
   ResidentsFormValues,
@@ -14,6 +15,7 @@ import {
 import ResidentsBlock from "./brief-steps/residents-block";
 import PremisesBlock from "./brief-steps/premises-block";
 import DemolitionBlock from "./brief-steps/demolition-block";
+import ConstructionInfoBlock from "./brief-steps/constructioninfo-block";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
@@ -24,6 +26,8 @@ const BriefMain: React.FC = () => {
     rooms: [],
   });
   const [demolitionData, setDemolitionData] = useState<DemolitionType>();
+  const [constructionData, setConstructionData] =
+    useState<ConstructionFormValues | null>(null);
 
   const handleNext = (
     data:
@@ -31,6 +35,7 @@ const BriefMain: React.FC = () => {
       | ResidentsFormValues
       | PremisesFormValues
       | DemolitionType
+      | ConstructionFormValues
   ) => {
     if (step === 1) {
       setCommonData(data as CommonFormValues);
@@ -40,6 +45,8 @@ const BriefMain: React.FC = () => {
       setPremisesData(data as PremisesFormValues);
     } else if (step === 4) {
       setDemolitionData(data as DemolitionType);
+    } else if (step === 5) {
+      setConstructionData(data as ConstructionFormValues);
     }
     setStep(step + 1);
   };
@@ -63,15 +70,18 @@ const BriefMain: React.FC = () => {
   });
 
   return (
-    <div className="sm:w-100 p-4 sm:p-6 sm:shadow-xl sm:rounded-2xl">
+    <div className="sm:w-100 p-5 sm:p-6 sm:shadow-xl sm:rounded-2xl">
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
       {step === 4 && (
         <DemolitionBlock onNext={handleNext} onBack={handleBack} />
       )}
+      {step === 5 && (
+        <ConstructionInfoBlock onNext={handleNext} onBack={handleBack} />
+      )}
       {/* Add other steps here */}
-      {step > 4 &&
+      {step > 5 &&
         commonData &&
         residentsData &&
         premisesData &&
@@ -101,13 +111,13 @@ const BriefMain: React.FC = () => {
                 loading ? "Документ загрудается..." : "Скачать PDF"
               }
             </PDFDownloadLink>
-        <PDFViewer style={{ width: "100%", height: "500px" }}>
-          <PDFDocument
-            data={commonData}
-            residents={residentsData}
-            premises={premisesData}
-          />
-        </PDFViewer>
+            <PDFViewer style={{ width: "100%", height: "500px" }}>
+              <PDFDocument
+                data={commonData}
+                residents={residentsData}
+                premises={premisesData}
+              />
+            </PDFViewer>
           </div>
         )}
     </div>

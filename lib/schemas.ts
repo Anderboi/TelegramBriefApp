@@ -84,7 +84,8 @@ export const ConstructionInfoSchema = z.object({
   floor: z.array(
     z
       .object({
-        id: z.coerce.number(),
+        // id: z.coerce.number(),
+        type: z.string(),
         material: z.string(),
         rooms: z.array(z.string()),
       })
@@ -93,18 +94,22 @@ export const ConstructionInfoSchema = z.object({
   ceiling: z.array(
     z
       .object({
-        id: z.coerce.number(),
+        // id: z.coerce.number(),
+        type: z.string(),
         material: z.string(),
         rooms: z.array(z.string()),
       })
       .optional()
   ),
   walls: z.array(
-    z.object({
-      id: z.coerce.number(),
-      material: z.string(),
-      rooms: z.array(z.string()),
-    })
+    z
+      .object({
+        // id: z.coerce.number(),
+        type: z.string(),
+        material: z.string(),
+        rooms: z.array(z.string()),
+      })
+      .optional()
   ),
 });
 export type ConstructionFormValues = z.infer<typeof ConstructionInfoSchema>;
