@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import FormBlock from "@/components/ui/formblock";
 import { Switch } from "@/components/ui/switch";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
+import BriefBlockMain from '@/components/ui/brief-block-main';
 
 interface ResidentsBlockProps {
   onNext: (data: ResidentsFormValues) => void;
@@ -101,7 +102,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
         className="flex h-full flex-col justify-between"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="space-y-4 pb-8">
+        <BriefBlockMain title="Проживающие">
           {/* Взрослые */}
           <FormBlock title="Взрослые">
             <>
@@ -305,7 +306,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
               </FormBlock>
             )}
           </section>
-        </div>
+        </BriefBlockMain>
         {/* Кнопка */}
         <BottomButtonBlock>
           <Button

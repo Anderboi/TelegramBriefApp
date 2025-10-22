@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
+import BriefBlockMain from "@/components/ui/brief-block-main";
 
 interface PremisesBlockProps {
   onNext: (data: PremisesFormValues) => void;
@@ -164,10 +165,9 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full w-full flex-col"
+        className="flex h-full w-full flex-col "
       >
-        <div className="space-y-6 pb-24">
-          <h2 className="text-2xl font-bold">Состав помещений</h2>
+        <BriefBlockMain title="Состав помещений">
           <FormBlock title="">
             {roomFields.map((room, index) => {
               const currentName = form.watch(`rooms.${index}.name`);
@@ -287,7 +287,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
               Добавить помещение
             </Button>
           </FormBlock>
-        </div>
+        </BriefBlockMain>
         <BottomButtonBlock>
           <Button
             variant={"secondary"}

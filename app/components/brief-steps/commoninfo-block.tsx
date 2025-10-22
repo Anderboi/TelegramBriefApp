@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,7 +15,8 @@ import { CommonDataSchema, CommonFormValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBlock from "@/components/ui/formblock";
 import { toast } from "sonner";
-import BottomButtonBlock from '@/components/ui/bottom-button-block';
+import BottomButtonBlock from "@/components/ui/bottom-button-block";
+import BriefBlockMain from "@/components/ui/brief-block-main";
 
 interface CommonInfoBlockProps {
   onNext: (data: CommonFormValues) => void;
@@ -63,8 +64,8 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <FormBlock title="Общая информация">
-          <div className="flex items-end space-x-2">
+        <BriefBlockMain title="Общая информация">
+          <FormBlock title="Клиент">
             <FormField
               name="clientName"
               control={form.control}
@@ -97,137 +98,118 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 </FormItem>
               )}
             />
-          </div>
-          <FormField
-            name="email"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Эл. почта</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    onFocus={(e) => e.target.select()}
-                    type="email"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="phone"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Номер телефона</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    onFocus={(e) => e.target.select()}
-                    type="tel"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="address"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Адрес</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    onFocus={(e) => e.target.select()}
-                    type="address"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className="flex items-end space-x-4">
             <FormField
+              name="email"
               control={form.control}
-              name="area"
               render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Площадь</FormLabel>
+                <FormItem>
+                  <FormLabel>Эл. почта</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       onFocus={(e) => e.target.select()}
-                      type="address"
+                      type="email"
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
             <FormField
+              name="phone"
               control={form.control}
-              name="contractNumber"
               render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Номер договора</FormLabel>
+                <FormItem>
+                  <FormLabel>Номер телефона</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       onFocus={(e) => e.target.select()}
-                      type="text"
+                      type="tel"
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
-          </div>
 
-          <div className="flex items-end space-x-2">
-            <FormField
-              control={form.control}
-              name="startDate"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Дата начала проекта</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      // value={
-                      //   field.value &&
-                      //   new Date(field.value).toISOString().split("T")[0]
-                      // }
-                      type="date"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            {/* <FormField
-              control={form.control}
-              name="finalDate"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Дата окончания проекта</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={
-                        field.value
-                          ? new Date(field.value).toISOString().split("T")[0]
-                          : new Date().toISOString().split("T")[0]
-                      }
-                      type="date"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
-          </div>
-        </FormBlock>
-        <BottomButtonBlock>
-          <Button type="submit" className="flex-1 sm:flex-none">
-            Далее
-          </Button>
-        </BottomButtonBlock>
+            <FormBlock title="Объект">
+              <FormField
+                name="address"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Адрес</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        onFocus={(e) => e.target.select()}
+                        type="address"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-end space-x-4">
+                <FormField
+                  control={form.control}
+                  name="area"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Площадь</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          onFocus={(e) => e.target.select()}
+                          type="address"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="contractNumber"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Номер договора</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          onFocus={(e) => e.target.select()}
+                          type="text"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Дата начала проекта</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        // value={
+                        //   field.value &&
+                        //   new Date(field.value).toISOString().split("T")[0]
+                        // }
+                        type="date"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </FormBlock>
+          </FormBlock>
+          <BottomButtonBlock>
+            <Button type="submit" className="flex-1 sm:flex-none">
+              Далее
+            </Button>
+          </BottomButtonBlock>
+        </BriefBlockMain>
       </form>
     </Form>
   );

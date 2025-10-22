@@ -20,6 +20,7 @@ import { ChevronDown, ChevronUp, X, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
+import BriefBlockMain from '@/components/ui/brief-block-main';
 
 interface EquipmentBlockProps {
   onNext: (data: EquipmentBlockFormValues) => void;
@@ -183,8 +184,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex h-full w-full  flex-col"
       >
-        <div className="space-y-4 pb-24">
-          <h2 className="text-2xl font-bold">Наполнение помещений</h2>
+        <BriefBlockMain title="Наполнение помещений">
 
           {rooms.map((room) => {
             const isExpanded = expandedRooms.has(room.id);
@@ -400,7 +400,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
               </FormBlock>
             );
           })}
-        </div>
+        </BriefBlockMain>
 
         <BottomButtonBlock>
           <Button

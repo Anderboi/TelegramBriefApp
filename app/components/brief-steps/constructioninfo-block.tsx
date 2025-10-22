@@ -29,6 +29,7 @@ import {
 } from "@/lib/schemas";
 import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
+import BriefBlockMain from '@/components/ui/brief-block-main';
 
 // Material types for each category
 const floorTypes = [
@@ -378,8 +379,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex h-full w-full flex-col"
       >
-        <div className="space-y-4 pb-24">
-          <h2 className="text-2xl font-bold">Информация по монтажу</h2>
+        <BriefBlockMain title="Информация по монтажу">
 
           {renderMaterialSection(
             "walls",
@@ -405,7 +405,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
             appendFloor,
             removeFloor
           )}
-        </div>
+        </BriefBlockMain>
 
         <BottomButtonBlock>
           <Button

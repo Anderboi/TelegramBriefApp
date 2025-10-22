@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { DemolitionSchema, DemolitionType } from "@/lib/schemas";
 import FormBlock from "@/components/ui/formblock";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
+import BriefBlockMain from '@/components/ui/brief-block-main';
 
 interface DemolitionBlockProps {
   onNext: (data: DemolitionType) => void;
@@ -66,8 +67,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex h-full w-full flex-col justify-between"
       >
-        <div className="space-y-6 pb-8">
-          <h2 className="text-2xl font-bold">Информация по демонтажу</h2>
+        <BriefBlockMain title="Информация по демонтажу">
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -223,7 +223,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
               />
             )}
           </FormBlock>
-        </div>
+        </BriefBlockMain>
         {/* Кнопка */}
         <BottomButtonBlock>
           <Button
