@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { DemolitionSchema, DemolitionType } from "@/lib/schemas";
 import FormBlock from "@/components/ui/formblock";
+import BottomButtonBlock from '@/components/ui/bottom-button-block';
 
 interface DemolitionBlockProps {
   onNext: (data: DemolitionType) => void;
@@ -63,9 +64,10 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full sm:w-full w-[calc(100vw-40px)] flex-col justify-between"
+        className="flex h-full w-full flex-col justify-between"
       >
-        <div className="space-y-4 pb-8">
+        <div className="space-y-6 pb-8">
+          <h2 className="text-2xl font-bold">Информация по демонтажу</h2>
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -223,7 +225,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
           </FormBlock>
         </div>
         {/* Кнопка */}
-        <div className="flex justify-between">
+        <BottomButtonBlock>
           <Button
             variant={"secondary"}
             type="button"
@@ -232,8 +234,10 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
           >
             Назад
           </Button>
-          <Button type="submit">Далее</Button>
-        </div>
+          <Button type="submit" className="flex-1 sm:flex-none">
+            Далее
+          </Button>
+        </BottomButtonBlock>
       </form>
     </Form>
   );

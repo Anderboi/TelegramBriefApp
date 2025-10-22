@@ -9,6 +9,7 @@ import {
   CommonFormValues,
   ConstructionFormValues,
   DemolitionType,
+  EquipmentBlockFormValues,
   PremisesFormValues,
   ResidentsFormValues,
 } from "@/lib/schemas";
@@ -16,6 +17,8 @@ import ResidentsBlock from "./brief-steps/residents-block";
 import PremisesBlock from "./brief-steps/premises-block";
 import DemolitionBlock from "./brief-steps/demolition-block";
 import ConstructionInfoBlock from "./brief-steps/constructioninfo-block";
+import EquipmentBlock from "./brief-steps/equipment-block";
+import { ProgressBar } from '@/components/ui/progress-bar';
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
@@ -28,6 +31,8 @@ const BriefMain: React.FC = () => {
   const [demolitionData, setDemolitionData] = useState<DemolitionType>();
   const [constructionData, setConstructionData] =
     useState<ConstructionFormValues | null>(null);
+  const [equipmentData, setEquipmentData] =
+    useState<EquipmentBlockFormValues | null>(null);
 
   const handleNext = (
     data:
@@ -36,6 +41,7 @@ const BriefMain: React.FC = () => {
       | PremisesFormValues
       | DemolitionType
       | ConstructionFormValues
+      | EquipmentBlockFormValues
   ) => {
     if (step === 1) {
       setCommonData(data as CommonFormValues);
@@ -47,6 +53,8 @@ const BriefMain: React.FC = () => {
       setDemolitionData(data as DemolitionType);
     } else if (step === 5) {
       setConstructionData(data as ConstructionFormValues);
+    } else if (step === 6) {
+      setEquipmentData(data as EquipmentBlockFormValues);
     }
     setStep(step + 1);
   };
@@ -71,6 +79,8 @@ const BriefMain: React.FC = () => {
 
   return (
     <div className="sm:w-100 p-5 sm:p-6 sm:shadow-xl sm:rounded-2xl">
+      
+      <ProgressBar step={step} totalSteps={6} />
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
@@ -80,8 +90,9 @@ const BriefMain: React.FC = () => {
       {step === 5 && (
         <ConstructionInfoBlock onNext={handleNext} onBack={handleBack} />
       )}
+      {step === 6 && <EquipmentBlock onNext={handleNext} onBack={handleBack} />}
       {/* Add other steps here */}
-      {step > 5 &&
+      {step > 6 &&
         commonData &&
         residentsData &&
         premisesData &&

@@ -15,6 +15,7 @@ import { CommonDataSchema, CommonFormValues } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBlock from "@/components/ui/formblock";
 import { toast } from "sonner";
+import BottomButtonBlock from '@/components/ui/bottom-button-block';
 
 interface CommonInfoBlockProps {
   onNext: (data: CommonFormValues) => void;
@@ -222,9 +223,11 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
             /> */}
           </div>
         </FormBlock>
-        <div className="flex justify-end">
-          <Button type="submit">Далее</Button>
-        </div>
+        <BottomButtonBlock>
+          <Button type="submit" className="flex-1 sm:flex-none">
+            Далее
+          </Button>
+        </BottomButtonBlock>
       </form>
     </Form>
   );

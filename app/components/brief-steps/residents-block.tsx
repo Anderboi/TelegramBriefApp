@@ -26,6 +26,7 @@ import { ResidentsFormValues, ResidentsSchema } from "@/lib/schemas";
 import { toast } from "sonner";
 import FormBlock from "@/components/ui/formblock";
 import { Switch } from "@/components/ui/switch";
+import BottomButtonBlock from '@/components/ui/bottom-button-block';
 
 interface ResidentsBlockProps {
   onNext: (data: ResidentsFormValues) => void;
@@ -306,7 +307,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           </section>
         </div>
         {/* Кнопка */}
-        <div className="flex justify-between">
+        <BottomButtonBlock>
           <Button
             variant={"secondary"}
             type="button"
@@ -315,8 +316,10 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           >
             Назад
           </Button>
-          <Button type="submit">Далее</Button>
-        </div>
+          <Button type="submit" className="flex-1 sm:flex-none">
+            Далее
+          </Button>
+        </BottomButtonBlock>
       </form>
     </Form>
   );

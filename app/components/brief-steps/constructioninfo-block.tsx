@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -27,7 +27,8 @@ import {
   ConstructionInfoSchema,
   PremisesFormValues,
 } from "@/lib/schemas";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
+import BottomButtonBlock from '@/components/ui/bottom-button-block';
 
 // Material types for each category
 const floorTypes = [
@@ -61,6 +62,10 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
   onNext,
   onBack,
 }) => {
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(["walls", "ceiling", "floor"])
+  );
+
   const form = useForm<ConstructionFormValues>({
     resolver: zodResolver(ConstructionInfoSchema),
     defaultValues: {
@@ -127,6 +132,18 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     return () => subscription.unsubscribe();
   }, [form]);
 
+  const toggleCategory = (category: string) => {
+    setExpandedCategories((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
+  };
+
   const toggleRoom = (
     category: "floor" | "ceiling" | "walls",
     sectionIndex: number,
@@ -190,6 +207,14 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     }
   }
 
+  const getCategoryItemCount = (category: "floor" | "ceiling" | "walls") => {
+    const sections = form.watch(category);
+    return (
+      sections?.filter((s) => s && s.type && s.rooms && s.rooms.length > 0)
+        .length || 0
+    );
+  };
+
   const renderMaterialSection = (
     category: "floor" | "ceiling" | "walls",
     title: string,
@@ -199,124 +224,150 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     remove: any
   ) => {
     const sections = form.watch(category);
+    const isExpanded = expandedCategories.has(category);
+    const itemCount = getCategoryItemCount(category);
 
     return (
-      <FormBlock title={title}>
-        {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className="space-y-4 pb-4 border-b last:border-b-0"
+      <FormBlock title="">
+        <div className="space-y-3">
+          {/* Category Header */}
+          <button
+            type="button"
+            onClick={() => toggleCategory(category)}
+            className="flex items-center justify-between w-full text-left"
           >
-            <div className="flex gap-2 items-start">
-              <FormField
-                control={form.control}
-                name={`${category}.${index}.type` as any}
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value || ""}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Выберите тип" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {types.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {fields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => remove(index)}
-                >
-                  <Trash2Icon size={20} />
-                </Button>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-lg">{title}</span>
+              {itemCount > 0 && (
+                <span className="text-sm text-gray-500">({itemCount})</span>
               )}
             </div>
+            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
 
-            {sections[index]?.type === "Другое" && (
-              <FormField
-                control={form.control}
-                name={`${category}.${index}.material` as any}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Укажите материал"
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Помещения:</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => selectAllRooms(category, index)}
-                  className="text-xs h-7"
+          {/* Category Content */}
+          {isExpanded && (
+            <div className="space-y-4 pl-4">
+              {fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="space-y-4 pb-4 border-b last:border-b-0"
                 >
-                  Все комнаты
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {roomList.map((room) => {
-                  const isSelected =
-                    sections[index]?.rooms?.includes(room.id) || false;
-                  return (
-                    <button
-                      key={room.id}
-                      type="button"
-                      onClick={() => toggleRoom(category, index, room.id)}
-                      className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                        isSelected
-                          ? "bg-black text-white"
-                          : "bg-white text-black border border-gray-300"
-                      }`}
-                    >
-                      <span className="opacity-60 mr-1">{room.order}.</span>
-                      {room.name}
-                    </button>
-                  );
-                })}
-              </div>
+                  <div className="flex gap-2 items-start">
+                    <FormField
+                      control={form.control}
+                      name={`${category}.${index}.type` as any}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value || ""}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Выберите тип" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {types.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2Icon size={20} />
+                      </Button>
+                    )}
+                  </div>
+
+                  {sections[index]?.type === "Другое" && (
+                    <FormField
+                      control={form.control}
+                      name={`${category}.${index}.material` as any}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder="Укажите материал"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">Помещения:</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => selectAllRooms(category, index)}
+                        className="text-xs h-7"
+                      >
+                        Все комнаты
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {roomList.map((room) => {
+                        const isSelected =
+                          sections[index]?.rooms?.includes(room.id) || false;
+                        return (
+                          <button
+                            key={room.id}
+                            type="button"
+                            onClick={() => toggleRoom(category, index, room.id)}
+                            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                              isSelected
+                                ? "bg-black text-white"
+                                : "bg-white text-black border border-gray-300"
+                            }`}
+                          >
+                            <span className="opacity-60 mr-1">
+                              {room.order}.
+                            </span>
+                            {room.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {form.formState.errors[category]?.[index]?.rooms && (
+                    <p className="text-sm text-red-500">
+                      Выберите хотя бы одно помещение
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => append({ type: "", material: "", rooms: [] })}
+                className="w-full"
+              >
+                Добавить материал
+              </Button>
             </div>
-
-            {form.formState.errors[category]?.[index]?.rooms && (
-              <p className="text-sm text-red-500">
-                Выберите хотя бы одно помещение
-              </p>
-            )}
-          </div>
-        ))}
-
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => append({ type: "", material: "", rooms: [] })}
-          className="w-full"
-        >
-          Добавить материал
-        </Button>
+          )}
+        </div>
       </FormBlock>
     );
   };
@@ -325,9 +376,9 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full sm:w-full w-[calc(100vw-40px)] flex-col justify-between"
+        className="flex h-full w-full flex-col"
       >
-        <div className="space-y-6 pb-8">
+        <div className="space-y-4 pb-24">
           <h2 className="text-2xl font-bold">Информация по монтажу</h2>
 
           {renderMaterialSection(
@@ -356,12 +407,18 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
           )}
         </div>
 
-        <div className="flex justify-between pt-4">
-          <Button variant="secondary" type="button" onClick={onBack}>
+        <BottomButtonBlock>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={onBack}
+          >
             Назад
           </Button>
-          <Button type="submit">Далее</Button>
-        </div>
+          <Button type="submit" className="flex-1 sm:flex-none">
+            Далее
+          </Button>
+        </BottomButtonBlock>
       </form>
     </Form>
   );
