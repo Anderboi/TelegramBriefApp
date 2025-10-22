@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { use, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -41,10 +41,26 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedData = localStorage.getItem("commonInfoBlockData");
-    if (savedData) {
-      form.reset(JSON.parse(savedData));
+    const storedData = localStorage.getItem("commonInfoBlockData");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      form.setValue("clientName", parsedData.clientName);
+      form.setValue("clientSurname", parsedData.clientSurname);
+      form.setValue("email", parsedData.email);
+      form.setValue("phone", parsedData.phone);
+      form.setValue("address", parsedData.address);
+      form.setValue("area", parsedData.area);
+      form.setValue("contractNumber", parsedData.contractNumber);
+      form.setValue("startDate", parsedData.startDate);
     }
+  }, [form]);
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      localStorage.setItem("commonInfoBlockData", JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
   }, [form]);
 
   const handleSubmit = (data: CommonFormValues) => {
