@@ -19,6 +19,8 @@ import FormBlock from "@/components/ui/formblock";
 import StyledSelect from "@/components/ui/styled-creatable-select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
+import { useFormPersistence } from '@/lib/hooks/useFormPersistance';
+import { STORAGE_KEYS } from '@/lib/constants';
 
 interface PremisesBlockProps {
   onNext: (data: PremisesFormValues) => void;
@@ -103,21 +105,12 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     name: "rooms",
   });
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("premisesData");
-    if (savedData) {
-      form.reset(JSON.parse(savedData));
-    }
-  }, [form]);
-
-  // Auto-save on form changes
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      localStorage.setItem("premisesData", JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+  // Используем хук для автоматической загрузки и сохранения
+  useFormPersistence(form, {
+    storageKey: STORAGE_KEYS.PREMISES,
+    autoSave: true,
+    debounceMs: 300, // Debounce 300ms для оптимизации
+  });
 
   function onSubmit(data: PremisesFormValues) {
     try {
@@ -156,7 +149,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <BriefBlockMain title="Состав помещений">
           <FormBlock>
             {roomFields.map((room, index) => {
@@ -170,40 +163,38 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                   className="flex items-center gap-2 pb-4 border-b last:border-b-0"
                 >
                   {/* <div className="flex  items-center gap-2"> */}
-                    <span className="px-2">{room.order}</span>
-                    <FormField
-                      control={form.control}
-                      name={`rooms.${index}.name`}
-                      render={({ field }) => (
-                        <FormItem className="relative w-full">
-                          <FormControl>
-                            <StyledSelect
-                              placeholder="Помещение..."
-                              options={options}
-                              onChange={(val) =>
-                                handleRoomNameChange(val, index)
-                              }
-                              value={
-                                options.find(
-                                  (option) => option.value === field.value
-                                ) || null
-                              }
-                              onCreateOption={(inputValue) =>
-                                handleCreateOption(inputValue, index)
-                              }
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant={"destructive"}
-                      onClick={() => remove(index)}
-                      size={"sm"}
-                    >
-                      <Trash2Icon size={20} />
-                    </Button>
+                  <span className="px-2">{room.order}</span>
+                  <FormField
+                    control={form.control}
+                    name={`rooms.${index}.name`}
+                    render={({ field }) => (
+                      <FormItem className="relative w-full">
+                        <FormControl>
+                          <StyledSelect
+                            placeholder="Помещение..."
+                            options={options}
+                            onChange={(val) => handleRoomNameChange(val, index)}
+                            value={
+                              options.find(
+                                (option) => option.value === field.value
+                              ) || null
+                            }
+                            onCreateOption={(inputValue) =>
+                              handleCreateOption(inputValue, index)
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    variant={"destructive"}
+                    onClick={() => remove(index)}
+                    size={"sm"}
+                  >
+                    <Trash2Icon size={20} />
+                  </Button>
                   {/* </div> */}
 
                   {/* Показываем тип помещения или селект для выбора */}
@@ -280,7 +271,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
             </Button>
           </FormBlock>
         </BriefBlockMain>
-        <BottomButtonBlock onBack={onBack}/>
+        <BottomButtonBlock onBack={onBack} />
       </form>
     </Form>
   );

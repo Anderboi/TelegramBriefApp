@@ -1,7 +1,6 @@
 "use client";
 
-import React, {  useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useEffect } from "react";
 import {
   Form,
   FormControl,
@@ -64,7 +63,6 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   }, [form]);
 
   const handleSubmit = (data: CommonFormValues) => {
-    console.log(data);
     try {
       // Save data to localStorage
       localStorage.setItem("commonInfoBlockData", JSON.stringify(data));
@@ -79,7 +77,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className='w-full'>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="w-full">
         <BriefBlockMain title="Общая информация">
           <FormBlock title="Клиент">
             <FormField
@@ -169,13 +167,16 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 control={form.control}
                 name="area"
                 render={({ field }) => (
-                  <FormItem className="//w-full">
+                  <FormItem className="w-full">
                     <FormLabel>Площадь</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         onFocus={(e) => e.target.select()}
-                        type="address"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        type="number"
+                        step="1"
+                        min="0"
                       />
                     </FormControl>
                   </FormItem>
@@ -185,7 +186,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 control={form.control}
                 name="contractNumber"
                 render={({ field }) => (
-                  <FormItem className="//w-full">
+                  <FormItem className="w-full">
                     <FormLabel>Номер договора</FormLabel>
                     <FormControl>
                       <Input
@@ -219,7 +220,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               )}
             />
           </FormBlock>
-          <BottomButtonBlock/>
+          <BottomButtonBlock />
         </BriefBlockMain>
       </form>
     </Form>
