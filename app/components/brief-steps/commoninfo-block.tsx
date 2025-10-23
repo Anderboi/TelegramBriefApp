@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect } from "react";
+import React, {  useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -146,14 +146,31 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 </FormItem>
               )}
             />
-
-            <FormBlock title="Объект">
+          </FormBlock>
+          <FormBlock title="Объект">
+            <FormField
+              name="address"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Адрес</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={(e) => e.target.select()}
+                      type="address"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <div className="flex items-end space-x-4">
               <FormField
-                name="address"
                 control={form.control}
+                name="area"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Адрес</FormLabel>
+                  <FormItem className="w-full">
+                    <FormLabel>Площадь</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -164,61 +181,43 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                   </FormItem>
                 )}
               />
-              <div className="flex items-end space-x-4">
-                <FormField
-                  control={form.control}
-                  name="area"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Площадь</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          onFocus={(e) => e.target.select()}
-                          type="address"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="contractNumber"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Номер договора</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          onFocus={(e) => e.target.select()}
-                          type="text"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-
               <FormField
                 control={form.control}
-                name="startDate"
+                name="contractNumber"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Дата начала проекта</FormLabel>
+                    <FormLabel>Номер договора</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
-                        // value={
-                        //   field.value &&
-                        //   new Date(field.value).toISOString().split("T")[0]
-                        // }
-                        type="date"
+                        onFocus={(e) => e.target.select()}
+                        type="text"
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
-            </FormBlock>
+            </div>
+
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Дата начала проекта</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      // value={
+                      //   field.value &&
+                      //   new Date(field.value).toISOString().split("T")[0]
+                      // }
+                      type="date"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </FormBlock>
           <BottomButtonBlock>
             <Button type="submit" className="flex-1 sm:flex-none">

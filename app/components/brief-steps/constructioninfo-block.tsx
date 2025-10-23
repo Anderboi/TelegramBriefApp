@@ -30,6 +30,7 @@ import {
 import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
 import BriefBlockMain from '@/components/ui/brief-block-main';
+import { Toggle } from '@/components/ui/toggle';
 
 // Material types for each category
 const floorTypes = [
@@ -229,8 +230,8 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     const itemCount = getCategoryItemCount(category);
 
     return (
-      <FormBlock title="">
-        <div className="space-y-3">
+      <FormBlock>
+        <div className="space-y-4">
           {/* Category Header */}
           <button
             type="button"
@@ -248,7 +249,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
           {/* Category Content */}
           {isExpanded && (
-            <div className="space-y-4 pl-4">
+            <div className="space-y-4">
               {fields.map((field, index) => (
                 <div
                   key={field.id}
@@ -315,6 +316,8 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Помещения:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       <Button
                         type="button"
                         variant="ghost"
@@ -324,27 +327,26 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                       >
                         Все комнаты
                       </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
                       {roomList.map((room) => {
                         const isSelected =
                           sections[index]?.rooms?.includes(room.id) || false;
                         return (
-                          <button
+                          <Toggle
                             key={room.id}
                             type="button"
+                            size='sm'
                             onClick={() => toggleRoom(category, index, room.id)}
-                            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                            className={`//px-4 //py-2 rounded-full //text-sm //transition-colors ${
                               isSelected
                                 ? "bg-black text-white"
                                 : "bg-white text-black border border-gray-300"
                             }`}
                           >
-                            <span className="opacity-60 mr-1">
+                            <span className="opacity-60">
                               {room.order}.
                             </span>
                             {room.name}
-                          </button>
+                          </Toggle>
                         );
                       })}
                     </div>

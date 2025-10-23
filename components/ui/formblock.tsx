@@ -4,12 +4,12 @@ function FormBlock({
   title,
   children,
 }: {
-  title: string;
+  title?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className=" space-y-1 pb-8 rounded-xl border-neutral-600 bg-background /p-4 dark:border dark:shadow-none">
-      <h3 className="font-bold text-lg pb-4">{title}</h3>
+    <section className="p-4 space-y-4 rounded-xl shadow-xl bg-background dark:border dark:shadow-none">
+      {title && <h3 className="font-bold text-lg //pb-4">{title}</h3>}
       <article className="space-y-4">{children}</article>
     </section>
   );

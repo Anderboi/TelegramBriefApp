@@ -19,8 +19,8 @@ import {
 import { ChevronDown, ChevronUp, X, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import BottomButtonBlock from '@/components/ui/bottom-button-block';
-import BriefBlockMain from '@/components/ui/brief-block-main';
+import BottomButtonBlock from "@/components/ui/bottom-button-block";
+import BriefBlockMain from "@/components/ui/brief-block-main";
 
 interface EquipmentBlockProps {
   onNext: (data: EquipmentBlockFormValues) => void;
@@ -180,12 +180,8 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full w-full  flex-col"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <BriefBlockMain title="Наполнение помещений">
-
           {rooms.map((room) => {
             const isExpanded = expandedRooms.has(room.id);
             const equipment = roomsEquipment[room.id] || [];
@@ -226,7 +222,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
                   {/* Room Content */}
                   {isExpanded && (
-                    <div className="space-y-4 pl-4">
+                    <div className="space-y-4">
                       {/* Suggestions */}
                       {suggestions.length > 0 && (
                         <div>
@@ -301,7 +297,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                       )
                                     }
                                     placeholder="Название"
-                                    className="flex-1"
+                                    className="flex-3"
                                   />
                                   <Input
                                     type="number"
@@ -316,16 +312,15 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                     }
                                     placeholder="Кол-во"
                                     min="1"
-                                    className="w-20"
+                                    className="//w-20 flex-1"
                                   />
                                   <Button
                                     type="button"
-                                    variant="ghost"
-                                    size="sm"
+                                    variant="outline"
+                                    size="icon"
                                     onClick={() =>
                                       toggleEquipmentDetails(eq.id)
                                     }
-                                    className="px-2"
                                   >
                                     <ChevronRight
                                       size={16}
@@ -336,12 +331,11 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                   </Button>
                                   <Button
                                     type="button"
-                                    variant="ghost"
-                                    size="sm"
+                                    variant="destructive"
+                                    size="icon"
                                     onClick={() =>
                                       removeEquipment(room.id, eq.id)
                                     }
-                                    className="px-2"
                                   >
                                     <X size={16} />
                                   </Button>
@@ -403,11 +397,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
         </BriefBlockMain>
 
         <BottomButtonBlock>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onBack}
-          >
+          <Button variant="secondary" type="button" onClick={onBack}>
             Назад
           </Button>
           <Button type="submit" className="flex-1 sm:flex-none">

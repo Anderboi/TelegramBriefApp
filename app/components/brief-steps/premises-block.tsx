@@ -165,10 +165,10 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex h-full w-full flex-col "
+        
       >
         <BriefBlockMain title="Состав помещений">
-          <FormBlock title="">
+          <FormBlock>
             {roomFields.map((room, index) => {
               const currentName = form.watch(`rooms.${index}.name`);
               const currentType = form.watch(`rooms.${index}.type`);
@@ -177,9 +177,9 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
               return (
                 <article
                   key={room.id}
-                  className="flex flex-col w-full gap-3 pb-4 border-b last:border-b-0"
+                  className="flex items-center gap-2 pb-4 border-b last:border-b-0"
                 >
-                  <div className="flex w-full items-center gap-2">
+                  {/* <div className="flex  items-center gap-2"> */}
                     <span className="px-4">{room.order}</span>
                     <FormField
                       control={form.control}
@@ -214,7 +214,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                     >
                       <Trash2Icon size={20} />
                     </Button>
-                  </div>
+                  {/* </div> */}
 
                   {/* Показываем тип помещения или селект для выбора */}
                   {/* {currentType && (
@@ -272,9 +272,11 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                 </article>
               );
             })}
+          </FormBlock>
+          <FormBlock>
             <Button
               type="button"
-              variant="secondary"
+              variant="default"
               className="w-full"
               onClick={() =>
                 append({

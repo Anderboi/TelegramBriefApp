@@ -78,7 +78,7 @@ const BriefMain: React.FC = () => {
   });
 
   return (
-    <div className="sm:w-100 p-5 sm:p-6 sm:shadow-xl sm:rounded-2xl">
+    <div>
       
       <ProgressBar step={step} totalSteps={6} />
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}

@@ -168,7 +168,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
               ))}
               <Button
                 type="button"
-                variant="secondary"
+                variant="default"
                 className="w-full"
                 onClick={() => addAdult({ height: 0, gender: "" })}
               >
@@ -221,7 +221,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
             <Button
               className="w-full"
               type="button"
-              variant="secondary"
+              variant="default"
               onClick={() => addChild({ age: 0 })}
             >
               Добавить ребенка
@@ -310,7 +310,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
         {/* Кнопка */}
         <BottomButtonBlock>
           <Button
-            variant={"secondary"}
+            variant='ghost'
             type="button"
             onClick={onBack}
             disabled={false}
