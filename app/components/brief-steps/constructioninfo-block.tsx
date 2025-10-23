@@ -409,18 +409,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
           )}
         </BriefBlockMain>
 
-        <BottomButtonBlock>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={onBack}
-          >
-            Назад
-          </Button>
-          <Button type="submit" className="flex-1 sm:flex-none">
-            Далее
-          </Button>
-        </BottomButtonBlock>
+        <BottomButtonBlock onBack={onBack}/>
       </form>
     </Form>
   );

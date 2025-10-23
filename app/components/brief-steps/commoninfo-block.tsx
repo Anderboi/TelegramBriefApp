@@ -219,11 +219,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               )}
             />
           </FormBlock>
-          <BottomButtonBlock>
-            <Button type="submit" className="flex-1 sm:flex-none">
-              Далее
-            </Button>
-          </BottomButtonBlock>
+          <BottomButtonBlock/>
         </BriefBlockMain>
       </form>
     </Form>

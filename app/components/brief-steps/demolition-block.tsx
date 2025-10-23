@@ -225,19 +225,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
           </FormBlock>
         </BriefBlockMain>
         {/* Кнопка */}
-        <BottomButtonBlock>
-          <Button
-            variant={"secondary"}
-            type="button"
-            onClick={onBack}
-            disabled={false}
-          >
-            Назад
-          </Button>
-          <Button type="submit" className="flex-1 sm:flex-none">
-            Далее
-          </Button>
-        </BottomButtonBlock>
+        <BottomButtonBlock onBack={onBack}/>
       </form>
     </Form>
   );
