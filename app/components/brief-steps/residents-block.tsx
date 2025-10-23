@@ -99,7 +99,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
   return (
     <Form {...form}>
       <form
-        className="flex h-full flex-col justify-between"
+        // className="flex h-full flex-col justify-between"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <BriefBlockMain title="Проживающие">
@@ -107,7 +107,9 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           <FormBlock title="Взрослые">
             <>
               {adultFields.map((block, index) => (
-                <div key={block.id} className="flex items-end space-x-2">
+                <div key={block.id} 
+                className="flex items-end space-x-2"
+                >
                   <FormField
                     control={control}
                     name={`adults.${index}.height`}
@@ -121,7 +123,6 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                             max={280}
                             placeholder="Рост (см)"
                             type="number"
-                            className="w-full"
                             onFocus={(e) => e.target.select()}
                             onChange={(event) =>
                               field.onChange(+event.target.value)
@@ -157,7 +158,6 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                   />
 
                   <Button
-                    className="w-fit"
                     type="button"
                     onClick={() => removeAdult(index)}
                     variant="destructive"
@@ -184,7 +184,9 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           {/* Дети */}
           <FormBlock title="Дети">
             {childFields.map((field, index) => (
-              <div key={field.id} className="flex w-full items-end space-x-2">
+              <div key={field.id} 
+              className="flex items-end space-x-2"
+              >
                 <FormField
                   control={control}
                   name={`children.${index}.age`}
@@ -235,7 +237,6 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
               name="hobbies"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Увлечения</FormLabel> */}
                   <FormControl>
                     <Textarea
                       {...field}

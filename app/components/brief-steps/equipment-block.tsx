@@ -180,7 +180,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
         <BriefBlockMain title="Наполнение помещений">
           {rooms.map((room) => {
             const isExpanded = expandedRooms.has(room.id);

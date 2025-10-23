@@ -78,7 +78,7 @@ const BriefMain: React.FC = () => {
   });
 
   return (
-    <div>
+    <>
       
       <ProgressBar step={step} totalSteps={6} />
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
@@ -131,7 +131,7 @@ const BriefMain: React.FC = () => {
             </PDFViewer>
           </div>
         )}
-    </div>
+    </>
   );
 };
 

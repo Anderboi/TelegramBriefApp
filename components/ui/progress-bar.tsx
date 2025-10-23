@@ -1,8 +1,8 @@
 export const ProgressBar = ({ step, totalSteps }: { step: number, totalSteps: number }) => {
   return (
     <div
-      className="progress-bar-container"
-      style={{ display: "flex", marginBottom: 20 }}
+      className="progress-bar-container flex w-full mb-5"
+      // style={{ display: "flex", marginBottom: 20 }}
     >
       {[...Array(totalSteps)].map((_, index) => (
         <div

@@ -17,13 +17,6 @@ import { roomList } from "@/lib/templates";
 import { PremisesFormValues, PremisesSchema, RoomType } from "@/lib/schemas";
 import FormBlock from "@/components/ui/formblock";
 import StyledSelect from "@/components/ui/styled-creatable-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 
@@ -163,10 +156,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
         <BriefBlockMain title="Состав помещений">
           <FormBlock>
             {roomFields.map((room, index) => {
@@ -180,7 +170,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                   className="flex items-center gap-2 pb-4 border-b last:border-b-0"
                 >
                   {/* <div className="flex  items-center gap-2"> */}
-                    <span className="px-4">{room.order}</span>
+                    <span className="px-2">{room.order}</span>
                     <FormField
                       control={form.control}
                       name={`rooms.${index}.name`}

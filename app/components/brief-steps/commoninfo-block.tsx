@@ -79,7 +79,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className='w-full'>
         <BriefBlockMain title="Общая информация">
           <FormBlock title="Клиент">
             <FormField
@@ -169,7 +169,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 control={form.control}
                 name="area"
                 render={({ field }) => (
-                  <FormItem className="w-full">
+                  <FormItem className="//w-full">
                     <FormLabel>Площадь</FormLabel>
                     <FormControl>
                       <Input
@@ -185,7 +185,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 control={form.control}
                 name="contractNumber"
                 render={({ field }) => (
-                  <FormItem className="w-full">
+                  <FormItem className="//w-full">
                     <FormLabel>Номер договора</FormLabel>
                     <FormControl>
                       <Input
@@ -203,7 +203,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               control={form.control}
               name="startDate"
               render={({ field }) => (
-                <FormItem className="w-full">
+                <FormItem className="//w-full">
                   <FormLabel>Дата начала проекта</FormLabel>
                   <FormControl>
                     <Input
