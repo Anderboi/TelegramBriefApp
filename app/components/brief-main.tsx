@@ -18,7 +18,8 @@ import PremisesBlock from "./brief-steps/premises-block";
 import DemolitionBlock from "./brief-steps/demolition-block";
 import ConstructionInfoBlock from "./brief-steps/constructioninfo-block";
 import EquipmentBlock from "./brief-steps/equipment-block";
-import { ProgressBar } from '@/components/ui/progress-bar';
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { Button } from "@/components/ui/button";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
@@ -79,7 +80,6 @@ const BriefMain: React.FC = () => {
 
   return (
     <>
-      
       <ProgressBar step={step} totalSteps={6} />
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
@@ -102,31 +102,50 @@ const BriefMain: React.FC = () => {
               Вы успешно заполнили техниеское задание на разработку
               дизайн-проекта.
             </h3>
-            <p>Скачайте документ в PDF формате.</p>
+            <p>Вы можете скачать документ в PDF формате.</p>
             <small className="pb-20">
-              Некоторое время информация в форме будет храниться у вас на
-              устройстве.
+              Информация сохранена на вашем устройстве и будет доступна при
+              следующем посещении.
             </small>
             <PDFDownloadLink
               style={styles.downloadButton}
               document={
                 <PDFDocument
-                  data={commonData}
-                  residents={residentsData}
-                  premises={premisesData}
+                  commonData={commonData}
+                  residentsData={residentsData || undefined}
+                  premisesData={premisesData || undefined}
+                  constructionData={constructionData || undefined}
+                  demolitionData={demolitionData || undefined}
+                  equipmentData={equipmentData || undefined}
                 />
               }
-              fileName="project_brief.pdf"
+              fileName={`brief_${commonData.clientSurname}_${
+                new Date().toISOString().split("T")[0]
+              }.pdf`}
             >
-              {({ blob, url, loading, error }) =>
-                loading ? "Документ загрудается..." : "Скачать PDF"
-              }
+              {({ loading }) => (
+                <Button className="flex-1 sm:flex-none" disabled={loading}>
+                  {loading ? "Подготовка документа..." : "Скачать PDF"}
+                </Button>
+              )}
             </PDFDownloadLink>
+            <Button
+              variant="outline"
+              onClick={() => setStep(1)}
+              className="flex-1 sm:flex-none"
+            >
+              Начать заново
+            </Button>
+
+            {/* Temp PDF prewiew */}
             <PDFViewer style={{ width: "100%", height: "500px" }}>
               <PDFDocument
-                data={commonData}
-                residents={residentsData}
-                premises={premisesData}
+                commonData={commonData}
+                residentsData={residentsData || undefined}
+                premisesData={premisesData || undefined}
+                constructionData={constructionData || undefined}
+                demolitionData={demolitionData || undefined}
+                equipmentData={equipmentData || undefined}
               />
             </PDFViewer>
           </div>

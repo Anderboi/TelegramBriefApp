@@ -99,7 +99,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
   return (
     <Form {...form}>
       <form
-        // className="flex h-full flex-col justify-between"
+        className="w-full"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <BriefBlockMain title="Проживающие">
