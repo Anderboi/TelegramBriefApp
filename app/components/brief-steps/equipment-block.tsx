@@ -34,7 +34,30 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
   );
   const [roomsEquipment, setRoomsEquipment] = useState<{
     [roomId: string]: Equipment[];
-  }>({});
+  }>(() => {
+    const savedData = localStorage.getItem("equipmentData");
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      const equipmentMap: { [roomId: string]: Equipment[] } = {};
+
+      data.rooms?.forEach((room: any) => {
+        equipmentMap[room.room_id] = room.equipment || [];
+      });
+      return equipmentMap;
+    }
+
+    const savedPremises = localStorage.getItem("premisesData");
+    if (savedPremises) {
+      const premisesData: PremisesFormValues = JSON.parse(savedPremises);
+      const initialEquipment: { [roomId: string]: Equipment[] } = {};
+      premisesData.rooms.forEach((room, index) => {
+        initialEquipment[`room-${index}`] = [];
+      });
+      return initialEquipment;
+    }
+
+    return {};
+  });
 
   // Get rooms from premises data
   const rooms = useMemo(() => {
@@ -58,30 +81,10 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
     },
   });
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("equipmentData");
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      const equipmentMap: { [roomId: string]: Equipment[] } = {};
-
-      data.rooms?.forEach((room: any) => {
-        equipmentMap[room.room_id] = room.equipment || [];
-      });
-
-      setRoomsEquipment(equipmentMap);
-    } else {
-      // Initialize empty equipment for each room
-      const initialEquipment: { [roomId: string]: Equipment[] } = {};
-      rooms.forEach((room) => {
-        initialEquipment[room.id] = [];
-      });
-      setRoomsEquipment(initialEquipment);
-    }
-  }, [rooms]);
-
   // Auto-save on changes
   useEffect(() => {
+    if (Object.keys(roomsEquipment).length === 0) return;
+
     const data = {
       rooms: rooms.map((room) => ({
         room_id: room.id,
@@ -180,7 +183,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <BriefBlockMain title="Наполнение помещений">
           {rooms.map((room) => {
             const isExpanded = expandedRooms.has(room.id);
@@ -396,7 +399,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
           })}
         </BriefBlockMain>
 
-        <BottomButtonBlock onBack={onBack}/>
+        <BottomButtonBlock onBack={onBack} />
       </form>
     </Form>
   );
