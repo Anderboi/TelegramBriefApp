@@ -148,8 +148,8 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                               <SelectValue placeholder="Пол" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="man">Мужской</SelectItem>
-                              <SelectItem value="woman">Женский</SelectItem>
+                              <SelectItem value="male">Мужской</SelectItem>
+                              <SelectItem value="female">Женский</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>

@@ -284,7 +284,7 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                     {premisesData.rooms.map((room, index) => (
                       <View key={index} style={styles.tableRow}>
                         <Text style={[styles.tableCell, { flex: 0.5 }]}>
-                          `{room.order}.{room.name}`
+                          {room.order}.{room.name}
                         </Text>
                       </View>
                     ))}
@@ -294,71 +294,12 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
             </View>
           )}
 
-          {/* Раздел 5: Информация по монтажу */}
-          {constructionData && (
-            <View style={styles.section}>
-              <View style={styles.grid}>
-                <View style={styles.gridKey}>
-                  <Text style={styles.sectionTitle}>Раздел 5</Text>
-                  <Text style={styles.sectionSubtitle}>
-                    Информация по монтажу
-                  </Text>
-                </View>
-                <View style={styles.gridValue}>
-                  {constructionData.walls &&
-                    constructionData.walls.length > 0 && (
-                      <View style={{ marginBottom: 10 }}>
-                        <Text style={styles.label}>Стены:</Text>
-                        {constructionData.walls.map((wall, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {wall?.type || "—"}
-                            {wall?.material && ` (${wall.material})`}
-                            {wall?.rooms && ` - ${wall.rooms.length} помещений`}
-                          </Text>
-                        ))}
-                      </View>
-                    )}
-
-                  {constructionData.ceiling &&
-                    constructionData.ceiling.length > 0 && (
-                      <View style={{ marginBottom: 10 }}>
-                        <Text style={styles.label}>Потолок:</Text>
-                        {constructionData.ceiling.map((ceiling, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {ceiling?.type || "—"}
-                            {ceiling?.material && ` (${ceiling.material})`}
-                            {ceiling?.rooms &&
-                              ` - ${ceiling.rooms.length} помещений`}
-                          </Text>
-                        ))}
-                      </View>
-                    )}
-
-                  {constructionData.floor &&
-                    constructionData.floor.length > 0 && (
-                      <View style={{ marginBottom: 10 }}>
-                        <Text style={styles.label}>Напольные покрытия:</Text>
-                        {constructionData.floor.map((floor, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {floor?.type || "—"}
-                            {floor?.material && ` (${floor.material})`}
-                            {floor?.rooms &&
-                              ` - ${floor.rooms.length} помещений`}
-                          </Text>
-                        ))}
-                      </View>
-                    )}
-                </View>
-              </View>
-            </View>
-          )}
-
-          {/* Раздел 6: Демонтаж */}
+          {/* Раздел 5: Демонтаж */}
           {demolitionData && (
             <View style={styles.section}>
               <View style={styles.grid}>
                 <View style={styles.gridKey}>
-                  <Text style={styles.sectionTitle}>Раздел 6</Text>
+                  <Text style={styles.sectionTitle}>Раздел 5</Text>
                   <Text style={styles.sectionSubtitle}>Демонтаж</Text>
                 </View>
 
@@ -405,6 +346,60 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
             </View>
           )}
         </Page>
+      )}
+
+      {/* Раздел 6: Информация по монтажу */}
+      {constructionData && (
+        <View style={styles.section}>
+          <View style={styles.grid}>
+            <View style={styles.gridKey}>
+              <Text style={styles.sectionTitle}>Раздел 6</Text>
+              <Text style={styles.sectionSubtitle}>Информация по монтажу</Text>
+            </View>
+            <View style={styles.gridValue}>
+              {constructionData.walls && constructionData.walls.length > 0 && (
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={styles.label}>Стены:</Text>
+                  {constructionData.walls.map((wall, index) => (
+                    <Text key={index} style={styles.listItem}>
+                      • {wall?.type || "—"}
+                      {wall?.material && ` (${wall.material})`}
+                      {wall?.rooms && ` - ${wall.rooms.length} помещений`}
+                    </Text>
+                  ))}
+                </View>
+              )}
+
+              {constructionData.ceiling &&
+                constructionData.ceiling.length > 0 && (
+                  <View style={{ marginBottom: 10 }}>
+                    <Text style={styles.label}>Потолок:</Text>
+                    {constructionData.ceiling.map((ceiling, index) => (
+                      <Text key={index} style={styles.listItem}>
+                        • {ceiling?.type || "—"}
+                        {ceiling?.material && ` (${ceiling.material})`}
+                        {ceiling?.rooms &&
+                          ` - ${ceiling.rooms.length} помещений`}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+
+              {constructionData.floor && constructionData.floor.length > 0 && (
+                <View style={{ marginBottom: 10 }}>
+                  <Text style={styles.label}>Напольные покрытия:</Text>
+                  {constructionData.floor.map((floor, index) => (
+                    <Text key={index} style={styles.listItem}>
+                      • {floor?.type || "—"}
+                      {floor?.material && ` (${floor.material})`}
+                      {floor?.rooms && ` - ${floor.rooms.length} помещений`}
+                    </Text>
+                  ))}
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
       )}
 
       {/* Страница 3: Наполнение помещений */}
