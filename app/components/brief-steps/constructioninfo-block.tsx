@@ -28,9 +28,9 @@ import {
   PremisesFormValues,
 } from "@/lib/schemas";
 import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
-import BottomButtonBlock from '@/components/ui/bottom-button-block';
-import BriefBlockMain from '@/components/ui/brief-block-main';
-import { Toggle } from '@/components/ui/toggle';
+import BottomButtonBlock from "@/components/ui/bottom-button-block";
+import BriefBlockMain from "@/components/ui/brief-block-main";
+import { Toggle } from "@/components/ui/toggle";
 
 // Material types for each category
 const floorTypes = [
@@ -286,7 +286,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                       <Button
                         type="button"
                         variant="destructive"
-                        size="sm"
+                        size="default"
                         onClick={() => remove(index)}
                       >
                         <Trash2Icon size={20} />
@@ -334,17 +334,15 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                           <Toggle
                             key={room.id}
                             type="button"
-                            size='sm'
+                            size="sm"
                             onClick={() => toggleRoom(category, index, room.id)}
-                            className={`//px-4 //py-2 rounded-full //text-sm //transition-colors ${
+                            className={`${
                               isSelected
-                                ? "bg-black text-white"
-                                : "bg-white text-black border border-gray-300"
+                                ? "bg-black text-white hover:bg-black/80"
+                                : "bg-neutral-100 text-black border border-gray-300"
                             }`}
                           >
-                            <span className="opacity-60">
-                              {room.order}.
-                            </span>
+                            <span className="opacity-60">{room.order}.</span>
                             {room.name}
                           </Toggle>
                         );
@@ -362,7 +360,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
               <Button
                 type="button"
-                variant="outline"
+                variant="default"
                 onClick={() => append({ type: "", material: "", rooms: [] })}
                 className="w-full"
               >
@@ -382,7 +380,6 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
         className="flex h-full w-full flex-col"
       >
         <BriefBlockMain title="Информация по монтажу">
-
           {renderMaterialSection(
             "walls",
             "Стены",
@@ -409,7 +406,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
           )}
         </BriefBlockMain>
 
-        <BottomButtonBlock onBack={onBack}/>
+        <BottomButtonBlock onBack={onBack} />
       </form>
     </Form>
   );
