@@ -284,7 +284,19 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                     {premisesData.rooms.map((room, index) => (
                       <View key={index} style={styles.tableRow}>
                         <Text style={[styles.tableCell, { flex: 0.5 }]}>
-                          {room.order}.{room.name}
+                          {room.order}
+                        </Text>
+                        <Text style={styles.tableCell}>{room.name}</Text>
+                        <Text style={styles.tableCell}>
+                          {room.type === "living"
+                            ? "Жилая"
+                            : room.type === "wet"
+                            ? "Мокрая зона"
+                            : room.type === "utility"
+                            ? "Хозяйственная"
+                            : room.type === "technical"
+                            ? "Техническая"
+                            : "—"}
                         </Text>
                       </View>
                     ))}

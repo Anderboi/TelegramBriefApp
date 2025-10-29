@@ -67,6 +67,8 @@ const BriefMain: React.FC = () => {
   const styles = StyleSheet.create({
     downloadButton: {
       backgroundColor: "tomato",
+      width: "100%",
+      textAlign: "center",
       color: "white",
       paddingLeft: 24,
       paddingRight: 24,
@@ -124,13 +126,15 @@ const BriefMain: React.FC = () => {
               }.pdf`}
             >
               {({ loading }) => (
-                <Button className="flex-1 sm:flex-none" disabled={loading}>
+                <>
+                {/* <Button className="flex-1 sm:flex-none" disabled={loading}> */}
                   {loading ? "Подготовка документа..." : "Скачать PDF"}
-                </Button>
+                {/* </Button> */}
+                </>
               )}
             </PDFDownloadLink>
             <Button
-              variant="outline"
+              variant="ghost"
               onClick={() => setStep(1)}
               className="flex-1 sm:flex-none"
             >
