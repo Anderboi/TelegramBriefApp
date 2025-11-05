@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import CommonInfoBlock from "./brief-steps/commoninfo-block";
 import { PDFDownloadLink, PDFViewer, StyleSheet } from "@react-pdf/renderer";
@@ -20,20 +20,29 @@ import ConstructionInfoBlock from "./brief-steps/constructioninfo-block";
 import EquipmentBlock from "./brief-steps/equipment-block";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Button } from "@/components/ui/button";
+import { useBriefStore } from "@/lib/store/briefStore";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
-  const [commonData, setCommonData] = useState<CommonFormValues | null>(null);
-  const [residentsData, setResidentsData] =
-    useState<ResidentsFormValues | null>(null);
-  const [premisesData, setPremisesData] = useState<PremisesFormValues>({
-    rooms: [],
-  });
-  const [demolitionData, setDemolitionData] = useState<DemolitionType>();
-  const [constructionData, setConstructionData] =
-    useState<ConstructionFormValues | null>(null);
-  const [equipmentData, setEquipmentData] =
-    useState<EquipmentBlockFormValues | null>(null);
+  const {
+    commonData,
+    residentsData,
+    premisesData,
+    demolitionData,
+    constructionData,
+    equipmentData,
+    setCommonData,
+    setResidentsData,
+    setPremisesData,
+    setDemolitionData,
+    setConstructionData,
+    setEquipmentData
+  } = useBriefStore();
+
+  // Загрузка данных из localStorage при монтировании компонента
+  useEffect(() => {
+    useBriefStore.getState().loadFromStorage();
+  }, []);
 
   const handleNext = (
     data:
@@ -57,6 +66,8 @@ const BriefMain: React.FC = () => {
     } else if (step === 6) {
       setEquipmentData(data as EquipmentBlockFormValues);
     }
+    // Сохранение данных в localStorage при каждом обновлении
+    useBriefStore.getState().saveToStorage();
     setStep(step + 1);
   };
 

@@ -19,20 +19,21 @@ import FormBlock from "@/components/ui/formblock";
 import StyledSelect from "@/components/ui/styled-creatable-select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
-import { useFormPersistence } from '@/lib/hooks/useFormPersistance';
-import { STORAGE_KEYS } from '@/lib/constants';
+// import { useFormPersistence } from '@/lib/hooks/useFormPersistance';
+// import { STORAGE_KEYS } from '@/lib/constants';
+import { useBriefStore } from "@/lib/store/briefStore";
 
 interface PremisesBlockProps {
   onNext: (data: PremisesFormValues) => void;
   onBack: () => void;
 }
 
-const roomTypes = [
-  { value: "living", label: "Жилая", emoji: "🏠" },
-  { value: "utility", label: "Хозяйственная", emoji: "🔧" },
-  { value: "wet", label: "Мокрая зона", emoji: "💧" },
-  { value: "technical", label: "Техническая", emoji: "⚙️" },
-];
+// const roomTypes = [
+//   { value: "living", label: "Жилая", emoji: "🏠" },
+//   { value: "utility", label: "Хозяйственная", emoji: "🔧" },
+//   { value: "wet", label: "Мокрая зона", emoji: "💧" },
+//   { value: "technical", label: "Техническая", emoji: "⚙️" },
+// ];
 
 // Функция автоматического определения типа помещения
 const autoDetectRoomType = (roomName: string): RoomType | undefined => {
@@ -87,12 +88,17 @@ const autoDetectRoomType = (roomName: string): RoomType | undefined => {
 };
 
 const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
+  const { premisesData, setPremisesData } = useBriefStore();
+
   const [options, setOptions] = useState(roomList);
 
   const form = useForm<PremisesFormValues>({
     resolver: zodResolver(PremisesSchema),
     defaultValues: {
-      rooms: [{ name: "", order: 1, type: undefined }],
+      rooms:
+        premisesData && premisesData.rooms && premisesData.rooms.length > 0
+          ? premisesData.rooms
+          : [{ name: "", order: 1, type: undefined }],
     },
   });
 
@@ -105,16 +111,22 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     name: "rooms",
   });
 
-  // Используем хук для автоматической загрузки и сохранения
-  useFormPersistence(form, {
-    storageKey: STORAGE_KEYS.PREMISES,
-    autoSave: true,
-    debounceMs: 300, // Debounce 300ms для оптимизации
-  });
+  // Обновляем форму при изменении данных в store
+  useEffect(() => {
+    if (premisesData) {
+      form.reset({
+        rooms:
+          premisesData && premisesData.rooms && premisesData.rooms.length > 0
+            ? premisesData.rooms
+            : [{ name: "", order: 1, type: undefined }],
+      });
+    }
+  }, [premisesData, form]);
 
   function onSubmit(data: PremisesFormValues) {
     try {
-      localStorage.setItem("premisesData", JSON.stringify(data));
+      // Обновляем данные в store
+      setPremisesData(data);
       toast.success("Помещения сохранены");
       onNext(data);
     } catch (error) {
@@ -195,61 +207,6 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                   >
                     <Trash2Icon size={20} />
                   </Button>
-                  {/* </div> */}
-
-                  {/* Показываем тип помещения или селект для выбора */}
-                  {/* {currentType && (
-                    <div className="pl-14 flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
-                        Тип:{" "}
-                        {roomTypes.find((t) => t.value === currentType)?.emoji}{" "}
-                        {roomTypes.find((t) => t.value === currentType)?.label}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          form.setValue(`rooms.${index}.type`, undefined)
-                        }
-                        className="h-6 text-xs"
-                      >
-                        Изменить
-                      </Button>
-                    </div>
-                  )}
-
-                  {showTypeSelect && (
-                    <FormField
-                      control={form.control}
-                      name={`rooms.${index}.type`}
-                      render={({ field }) => (
-                        <FormItem className="pl-14">
-                          <FormLabel>Укажите тип помещения</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Выберите тип помещения" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {roomTypes.map((type) => (
-                                <SelectItem key={type.value} value={type.value}>
-                                  <span className="flex items-center gap-2">
-                                    <span>{type.emoji}</span>
-                                    <span>{type.label}</span>
-                                  </span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormItem>
-                      )}
-                    />
-                  )} */}
                 </article>
               );
             })}

@@ -28,6 +28,7 @@ import FormBlock from "@/components/ui/formblock";
 import { Switch } from "@/components/ui/switch";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
 import BriefBlockMain from '@/components/ui/brief-block-main';
+import { useBriefStore } from "@/lib/store/briefStore";
 
 interface ResidentsBlockProps {
   onNext: (data: ResidentsFormValues) => void;
@@ -35,6 +36,8 @@ interface ResidentsBlockProps {
 }
 
 const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
+  const { residentsData, setResidentsData } = useBriefStore();
+  
   const form = useForm<ResidentsFormValues>({
     resolver: zodResolver(ResidentsSchema),
     defaultValues: {

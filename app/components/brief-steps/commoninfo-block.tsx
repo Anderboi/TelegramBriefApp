@@ -16,56 +16,49 @@ import FormBlock from "@/components/ui/formblock";
 import { toast } from "sonner";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
+import { useBriefStore } from "@/lib/store/briefStore";
 
 interface CommonInfoBlockProps {
   onNext: (data: CommonFormValues) => void;
 }
 
 const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
-  // const [data, setData] = useState<Record<string, string>>({});
-
+  const { commonData, setCommonData } = useBriefStore();
+  
   const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
     defaultValues: {
-      clientName: "",
-      clientSurname: "",
-      email: "",
-      phone: "",
-      address: "",
-      area: 0,
-      contractNumber: "",
-      startDate: new Date().toLocaleDateString(),
+      clientName: commonData?.clientName || "",
+      clientSurname: commonData?.clientSurname || "",
+      email: commonData?.email || "",
+      phone: commonData?.phone || "",
+      address: commonData?.address || "",
+      area: commonData?.area || 0,
+      contractNumber: commonData?.contractNumber || "",
+      startDate: commonData?.startDate || new Date().toISOString().split("T")[0],
     },
   });
 
-  // Load data from localStorage on component mount
+  // Обновляем форму при изменении данных в store
   useEffect(() => {
-    const storedData = localStorage.getItem("commonInfoBlockData");
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      form.setValue("clientName", parsedData.clientName);
-      form.setValue("clientSurname", parsedData.clientSurname);
-      form.setValue("email", parsedData.email);
-      form.setValue("phone", parsedData.phone);
-      form.setValue("address", parsedData.address);
-      form.setValue("area", parsedData.area);
-      form.setValue("contractNumber", parsedData.contractNumber);
-      form.setValue("startDate", parsedData.startDate);
+    if (commonData) {
+      form.reset({
+        clientName: commonData.clientName || "",
+        clientSurname: commonData.clientSurname || "",
+        email: commonData.email || "",
+        phone: commonData.phone || "",
+        address: commonData.address || "",
+        area: commonData.area || 0,
+        contractNumber: commonData.contractNumber || "",
+        startDate: commonData.startDate || new Date().toISOString().split("T")[0],
+      });
     }
-  }, [form]);
-
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      localStorage.setItem("commonInfoBlockData", JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+ }, [commonData, form]);
 
   const handleSubmit = (data: CommonFormValues) => {
     try {
-      // Save data to localStorage
-      localStorage.setItem("commonInfoBlockData", JSON.stringify(data));
+      // Обновляем данные в store
+      setCommonData(data);
       toast.success("Общая информация по объекту заполнена");
       // Move to the next step
       onNext(data);
