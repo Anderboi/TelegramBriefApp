@@ -116,6 +116,15 @@ export const equipmentTemplates = {
   ],
 };
 
+// Тип для кэша
+type EquipmentSuggestionsCache = Map<string, typeof equipmentTemplates[keyof typeof equipmentTemplates]>;
+
+// Интерфейс для расширения функции
+interface GetMemoizedEquipmentSuggestions {
+  (roomName: string, roomType?: RoomType): typeof equipmentTemplates[keyof typeof equipmentTemplates];
+  cache: EquipmentSuggestionsCache;
+}
+
 // Функция для получения предложений оборудования
 export const getEquipmentSuggestions = (
   roomName: string,
@@ -133,12 +142,12 @@ export const getEquipmentSuggestions = (
     if (name.includes("спальн")) return equipmentTemplates.bedroom;
     return equipmentTemplates.living;
   }
-  if (roomType === "utility") return equipmentTemplates.default;
+ if (roomType === "utility") return equipmentTemplates.default;
   if (roomType === "technical") return equipmentTemplates.default;
 
   // Проверка по названию помещения (если тип не указан)
   if (name.includes("кухн")) return equipmentTemplates.kitchen;
-  if (
+ if (
     name.includes("ванн") ||
     name.includes("санузел") ||
     name.includes("с/у") ||
@@ -150,6 +159,40 @@ export const getEquipmentSuggestions = (
   if (name.includes("спальн") || name.includes("детск"))
     return equipmentTemplates.bedroom;
   return equipmentTemplates.default;
+};
+
+// Мемоизированная версия функции для получения предложений оборудования
+export const getMemoizedEquipmentSuggestions: GetMemoizedEquipmentSuggestions = (
+  roomName: string,
+  roomType?: RoomType
+): typeof equipmentTemplates[keyof typeof equipmentTemplates] => {
+  // Создаем уникальный ключ для кэширования
+  const cacheKey = `${roomName}_${roomType || 'undefined'}`;
+  
+  // Простой кэш в памяти
+  if (!getMemoizedEquipmentSuggestions.cache) {
+    getMemoizedEquipmentSuggestions.cache = new Map() as EquipmentSuggestionsCache;
+  }
+  
+  const cachedResult = getMemoizedEquipmentSuggestions.cache.get(cacheKey);
+  if (cachedResult) {
+    return cachedResult;
+ }
+  
+  const result = getEquipmentSuggestions(roomName, roomType);
+  getMemoizedEquipmentSuggestions.cache.set(cacheKey, result);
+  
+  return result;
+};
+
+// Инициализируем кэш
+getMemoizedEquipmentSuggestions.cache = new Map() as EquipmentSuggestionsCache;
+
+// Сброс кэша при необходимости
+export const clearEquipmentSuggestionsCache = () => {
+  if (getMemoizedEquipmentSuggestions.cache) {
+    getMemoizedEquipmentSuggestions.cache.clear();
+  }
 };
 
 // ? Резиденты

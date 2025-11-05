@@ -14,7 +14,7 @@ import {
   EquipmentBlockSchema,
   PremisesFormValues,
   Equipment,
-  getEquipmentSuggestions,
+  getMemoizedEquipmentSuggestions,
 } from "@/lib/schemas";
 import { ChevronDown, ChevronUp, X, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -188,15 +188,20 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
           {rooms.map((room) => {
             const isExpanded = expandedRooms.has(room.id);
             const equipment = roomsEquipment[room.id] || [];
-            const allSuggestions = getEquipmentSuggestions(
-              room.name,
-              room.type
-            );
-            const selectedNames = new Set(equipment.map((eq) => eq.name));
-            // Фильтруем suggestions, убирая уже выбранные
-            const suggestions = allSuggestions.filter(
-              (s) => !selectedNames.has(s.name)
-            );
+
+            // Мемоизируем вычисления, связанные с подбором оборудования
+            const suggestions = useMemo(() => {
+              const allSuggestions = getMemoizedEquipmentSuggestions(
+                room.name,
+                room.type
+              );
+              const selectedNames = new Set(equipment.map((eq) => eq.name));
+              // Фильтруем suggestions, убирая уже выбранные
+              return allSuggestions.filter(
+                (s: { name: string; category: string }) =>
+                  !selectedNames.has(s.name)
+              );
+            }, [room.name, room.type, equipment]);
 
             return (
               <FormBlock key={room.id} title="">
@@ -233,22 +238,27 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                             Предлагаемое оборудование:
                           </p>
                           <div className="flex flex-wrap gap-2">
-                            {suggestions.map((suggestion, idx) => (
-                              <button
-                                key={idx}
-                                type="button"
-                                onClick={() => {
-                                  addEquipmentFromSuggestion(
-                                    room.id,
-                                    suggestion.name,
-                                    suggestion.category
-                                  );
-                                }}
-                                className="px-3 py-1.5 rounded-full text-sm transition-colors bg-white text-black border border-gray-300 hover:bg-gray-50"
-                              >
-                                {suggestion.name}
-                              </button>
-                            ))}
+                            {suggestions.map(
+                              (
+                                suggestion: { name: string; category: string },
+                                idx: number
+                              ) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => {
+                                    addEquipmentFromSuggestion(
+                                      room.id,
+                                      suggestion.name,
+                                      suggestion.category
+                                    );
+                                  }}
+                                  className="px-3 py-1.5 rounded-full text-sm transition-colors bg-white text-black border border-gray-300 hover:bg-gray-50"
+                                >
+                                  {suggestion.name}
+                                </button>
+                              )
+                            )}
                           </div>
                         </div>
                       )}
