@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash2Icon } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { ResidentsFormValues, ResidentsSchema } from "@/lib/schemas";
 import { toast } from "sonner";
@@ -29,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import BottomButtonBlock from '@/components/ui/bottom-button-block';
 import BriefBlockMain from '@/components/ui/brief-block-main';
 import { useBriefStore } from "@/lib/store/briefStore";
+import RemoveIconButton from '@/components/remove-icon-button';
 
 interface ResidentsBlockProps {
   onNext: () => void;
@@ -148,14 +148,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                       </FormItem>
                     )}
                   />
-
-                  <Button
-                    type="button"
-                    onClick={() => removeAdult(index)}
-                    variant="destructive"
-                  >
-                    <Trash2Icon size={20} />
-                  </Button>
+                  <RemoveIconButton onClick={() => removeAdult(index)} />
                 </div>
               ))}
               <Button
@@ -201,14 +194,8 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                     </FormItem>
                   )}
                 />
-
-                <Button
-                  type="button"
-                  onClick={() => removeChild(index)}
-                  variant="destructive"
-                >
-                  <Trash2Icon size={20} />
-                </Button>
+                <RemoveIconButton onClick={() => removeChild(index)} />
+                
               </div>
             ))}
             <Button

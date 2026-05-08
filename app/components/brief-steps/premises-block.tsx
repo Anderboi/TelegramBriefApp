@@ -3,14 +3,7 @@
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
-import { Trash2Icon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { toast } from "sonner";
 import { roomList } from "@/lib/templates";
 import { PremisesFormValues, PremisesSchema, RoomType } from "@/lib/schemas";
@@ -19,6 +12,8 @@ import StyledSelect from "@/components/ui/styled-creatable-select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
+import AddButton from "@/components/add-button";
+import RemoveIconButton from "@/components/remove-icon-button";
 
 interface PremisesBlockProps {
   onNext: () => void;
@@ -161,7 +156,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                   className="flex items-center gap-2 pb-4 border-b last:border-b-0"
                 >
                   {/* <div className="flex  items-center gap-2"> */}
-                  <span className="px-2">{room.order}</span>
+                  <span className="px-1">{room.order}</span>
                   <FormField
                     control={form.control}
                     name={`rooms.${index}.name`}
@@ -174,7 +169,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                             onChange={(val) => handleRoomNameChange(val, index)}
                             value={
                               options.find(
-                                (option) => option.value === field.value
+                                (option) => option.value === field.value,
                               ) || null
                             }
                             onCreateOption={(inputValue) =>
@@ -185,23 +180,13 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="button"
-                    variant={"destructive"}
-                    onClick={() => remove(index)}
-                    size={"sm"}
-                  >
-                    <Trash2Icon size={20} />
-                  </Button>
+                  <RemoveIconButton onClick={() => remove(index)} />
                 </article>
               );
             })}
           </FormBlock>
           <FormBlock>
-            <Button
-              type="button"
-              variant="default"
-              className="w-full"
+            <AddButton
               onClick={() =>
                 append({
                   name: "",
@@ -211,7 +196,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
               }
             >
               Добавить помещение
-            </Button>
+            </AddButton>
           </FormBlock>
         </BriefBlockMain>
         <BottomButtonBlock onBack={onBack} />

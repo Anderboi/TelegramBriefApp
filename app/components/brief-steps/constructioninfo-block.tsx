@@ -22,15 +22,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import FormBlock from "@/components/ui/formblock";
-import {
-  ConstructionFormValues,
-  ConstructionInfoSchema,
-} from "@/lib/schemas";
-import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
+import { ConstructionFormValues, ConstructionInfoSchema } from "@/lib/schemas";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { Toggle } from "@/components/ui/toggle";
 import { useBriefStore } from "@/lib/store/briefStore";
+import AddButton from "@/components/add-button";
+import RemoveIconButton from "@/components/remove-icon-button";
 
 // Material types for each category
 const floorTypes = [
@@ -64,7 +63,8 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
   onNext,
   onBack,
 }) => {
-  const { constructionData, setConstructionData, premisesData } = useBriefStore();
+  const { constructionData, setConstructionData, premisesData } =
+    useBriefStore();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["walls", "ceiling", "floor"]),
   );
@@ -277,14 +277,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                       )}
                     />
                     {fields.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="default"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2Icon size={20} />
-                      </Button>
+                      <RemoveIconButton onClick={() => remove(index)} />
                     )}
                   </div>
 
@@ -333,7 +326,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                           </Button>
                         );
                       })()}
-                      
+
                       {roomList.map((room) => {
                         const isSelected =
                           sections[index]?.rooms?.includes(room.id) || false;
@@ -365,14 +358,11 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                 </div>
               ))}
 
-              <Button
-                type="button"
-                variant="default"
+              <AddButton
                 onClick={() => append({ type: "", material: "", rooms: [] })}
-                className="w-full"
               >
                 Добавить материал
-              </Button>
+              </AddButton>
             </div>
           )}
         </div>

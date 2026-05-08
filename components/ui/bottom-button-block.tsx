@@ -1,5 +1,5 @@
-import React from "react";
 import { Button } from "./button";
+import { ChevronLeft } from 'lucide-react';
 
 const BottomButtonBlock = ({
   onBack,
@@ -12,6 +12,7 @@ const BottomButtonBlock = ({
     <div className="fixed bottom-2 left-2 right-2 sm:left-6 sm:right-6 sm:bottom-6 rounded-2xl p-4 shadow-2xl bg-white dark:bg-black/90 flex justify-between gap-4">
       {onBack && (
         <Button variant="ghost" type="button" onClick={onBack} disabled={false}>
+          <ChevronLeft className="size-5" />
           Назад
         </Button>
       )}
