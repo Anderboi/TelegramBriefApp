@@ -20,6 +20,7 @@ import FormBlock from "@/components/ui/formblock";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
+import AnimatedArea from "@/components/animated-area";
 
 interface DemolitionBlockProps {
   onNext: () => void;
@@ -79,7 +80,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                 </FormItem>
               )}
             />
-            {form.watch("planChange") && (
+            <AnimatedArea formWatch={form.watch("planChange")}>
               <FormField
                 control={form.control}
                 name="planChangeInfo"
@@ -98,8 +99,9 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            </AnimatedArea>
           </FormBlock>
+
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -117,7 +119,8 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                 </FormItem>
               )}
             />
-            {form.watch("entranceDoorChange") && (
+
+            <AnimatedArea formWatch={form.watch("entranceDoorChange")}>
               <FormField
                 control={form.control}
                 name="enteranceDoorType"
@@ -138,8 +141,9 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            </AnimatedArea>
           </FormBlock>
+
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -157,7 +161,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                 </FormItem>
               )}
             />
-            {form.watch("windowsChange") && (
+            <AnimatedArea formWatch={form.watch("windowsChange")}>
               <FormField
                 control={form.control}
                 name="windowsType"
@@ -176,8 +180,9 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            </AnimatedArea>
           </FormBlock>
+
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -195,10 +200,9 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                 </FormItem>
               )}
             />
-            {form.watch("furnitureDemolition") && (
+            <AnimatedArea formWatch={form.watch("furnitureDemolition")}>
               <FormField
                 control={form.control}
-                // TODO Change pets
                 name="furnitureToDemolish"
                 render={({ field }) => (
                   <FormItem className="sm:col-span-2">
@@ -215,7 +219,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            </AnimatedArea>
           </FormBlock>
         </BriefBlockMain>
         {/* Кнопка */}
