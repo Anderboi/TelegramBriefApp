@@ -15,24 +15,40 @@ import {
   Equipment,
   getMemoizedEquipmentSuggestions,
 } from "@/lib/schemas";
-import { ChevronDown, ChevronUp, X, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronUp, X, ChevronRight, Settings2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
 
 interface EquipmentBlockProps {
-  onNext: () => void;
+  onNext: (data?: any) => void;
   onBack: () => void;
 }
 
 const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
   const { equipmentData, setEquipmentData, premisesData } = useBriefStore();
+
+  const [editingItem, setEditingItem] = useState<{
+    roomId: string;
+    equipmentId: string;
+  } | null>(null);
+
   const [expandedRooms, setExpandedRooms] = useState<Set<string>>(new Set());
   const [expandedEquipment, setExpandedEquipment] = useState<Set<string>>(
     new Set(),
   );
+
   const [roomsEquipment, setRoomsEquipment] = useState<{
     [roomId: string]: Equipment[];
   }>(() => {
@@ -79,11 +95,8 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
   const toggleRoom = (roomId: string) => {
     setExpandedRooms((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(roomId)) {
-        newSet.delete(roomId);
-      } else {
-        newSet.add(roomId);
-      }
+      if (newSet.has(roomId)) newSet.delete(roomId);
+      else newSet.add(roomId);
       return newSet;
     });
   };
@@ -111,15 +124,13 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
       room_id: roomId,
       category,
       isCustom: false,
+      quantity: 1,
     };
 
-    setRoomsEquipment((prev) => {
-      const updated = {
-        ...prev,
-        [roomId]: [...(prev[roomId] || []), newEquipment],
-      };
-      return updated;
-    });
+    setRoomsEquipment((prev) => ({
+      ...prev,
+      [roomId]: [...(prev[roomId] || []), newEquipment],
+    }));
   };
 
   const removeEquipment = (roomId: string, equipmentId: string) => {
@@ -160,6 +171,12 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
       toast.error("Ошибка при попытке сохранения данных");
     }
   }
+
+  const currentEditEq = editingItem
+    ? roomsEquipment[editingItem.roomId]?.find(
+        (eq) => eq.id === editingItem.equipmentId,
+      )
+    : null;
 
   return (
     <Form {...form}>
@@ -269,113 +286,80 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                             Выбранное оборудование:
                           </p>
                           {equipment.map((eq) => {
-                            const isDetailsExpanded = expandedEquipment.has(
-                              eq.id,
+                            const hasExtraDetails = !!(
+                              eq.manufacturer ||
+                              eq.url ||
+                              eq.description
                             );
+                            // const isDetailsExpanded = expandedEquipment.has(
+                            //   eq.id,
+                            // );
                             return (
                               <div
                                 key={eq.id}
-                                className="border rounded-lg p-3 space-y-2"
+                                className="flex items-center //gap-2 //bg-zinc-100 border border-gray-200 //shadow-sm rounded-lg py-1.5"
                               >
-                                {/* Compact view */}
-                                <div className="flex items-center gap-2">
-                                  <Input
-                                    value={eq.name}
-                                    onChange={(e) =>
-                                      updateEquipment(
-                                        room.id,
-                                        eq.id,
-                                        "name",
-                                        e.target.value,
-                                      )
-                                    }
-                                    placeholder="Название"
-                                    className="flex-3"
-                                  />
-                                  <Input
-                                    type="number"
-                                    value={eq.quantity || 1}
-                                    onChange={(e) =>
-                                      updateEquipment(
-                                        room.id,
-                                        eq.id,
-                                        "quantity",
-                                        parseInt(e.target.value) || 1,
-                                      )
-                                    }
-                                    placeholder="Кол-во"
-                                    min="1"
-                                    className="//w-20 flex-1"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={() =>
-                                      toggleEquipmentDetails(eq.id)
-                                    }
-                                  >
-                                    <ChevronRight
-                                      size={16}
-                                      className={`transition-transform ${
-                                        isDetailsExpanded ? "rotate-90" : ""
-                                      }`}
-                                    />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="icon"
-                                    onClick={() =>
-                                      removeEquipment(room.id, eq.id)
-                                    }
-                                  >
-                                    <X size={16} />
-                                  </Button>
-                                </div>
+                                <Input
+                                  value={eq.name}
+                                  onChange={(e) =>
+                                    updateEquipment(
+                                      room.id,
+                                      eq.id,
+                                      "name",
+                                      e.target.value,
+                                    )
+                                  }
+                                  placeholder="Название"
+                                  className="flex-1 h-8 border-none shadow-none focus-visible:ring-1 bg-transparent"
+                                />
+                                <Input
+                                  type="number"
+                                  value={eq.quantity || 1}
+                                  onChange={(e) =>
+                                    updateEquipment(
+                                      room.id,
+                                      eq.id,
+                                      "quantity",
+                                      parseInt(e.target.value) || 1,
+                                    )
+                                  }
+                                  min="1"
+                                  className="w-[52px] h-9 text-center bg-gray-50 border-gray-200 px-1"
+                                />
 
-                                {/* Expandable details */}
-                                {isDetailsExpanded && (
-                                  <div className="space-y-2 pt-2 border-t">
-                                    <Input
-                                      value={eq.manufacturer || ""}
-                                      onChange={(e) =>
-                                        updateEquipment(
-                                          room.id,
-                                          eq.id,
-                                          "manufacturer",
-                                          e.target.value,
-                                        )
-                                      }
-                                      placeholder="Производитель (необязательно)"
-                                    />
-                                    <Input
-                                      value={eq.url || ""}
-                                      onChange={(e) =>
-                                        updateEquipment(
-                                          room.id,
-                                          eq.id,
-                                          "url",
-                                          e.target.value,
-                                        )
-                                      }
-                                      placeholder="Ссылка на товар (необязательно)"
-                                    />
-                                    <Textarea
-                                      value={eq.description || ""}
-                                      onChange={(e) =>
-                                        updateEquipment(
-                                          room.id,
-                                          eq.id,
-                                          "description",
-                                          e.target.value,
-                                        )
-                                      }
-                                      placeholder="Комментарий (необязательно)"
-                                      rows={2}
-                                    />
-                                  </div>
-                                )}
+                                {/* Кнопка вызова шторки (Drawer) */}
+                                <Button
+                                  type="button"
+                                  variant={
+                                    hasExtraDetails ? "secondary" : "ghost"
+                                  }
+                                  size="icon"
+                                  className={`h-9 w-9 shrink-0 ${
+                                    hasExtraDetails
+                                      ? "text-primary bg-primary/10 hover:bg-primary/20"
+                                      : "text-gray-400"
+                                  }`}
+                                  onClick={() =>
+                                    setEditingItem({
+                                      roomId: room.id,
+                                      equipmentId: eq.id,
+                                    })
+                                  }
+                                >
+                                  <Settings2 size={18} />
+                                </Button>
+
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-9 w-9 shrink-0 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                                  onClick={() =>
+                                    removeEquipment(room.id, eq.id)
+                                  }
+                                >
+                                  <X size={18} />
+                                </Button>
                               </div>
                             );
                           })}
@@ -388,6 +372,94 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
             );
           })}
         </BriefBlockMain>
+
+        {/* Шторка (Drawer) для деталей оборудования */}
+        <Drawer
+          open={!!editingItem}
+          onOpenChange={(open) => {
+            if (!open) setEditingItem(null);
+          }}
+        >
+          <DrawerContent>
+            <div className="mx-auto w-full max-w-md">
+              <DrawerHeader>
+                <DrawerTitle>
+                  {currentEditEq?.name || "Детали предмета"}
+                </DrawerTitle>
+                <DrawerDescription>
+                  Уточните производителя, ссылку на товар или оставьте
+                  комментарий для дизайнера.
+                </DrawerDescription>
+              </DrawerHeader>
+
+              <div className="p-4 space-y-4">
+                {currentEditEq && editingItem && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Производитель / Бренд
+                      </label>
+                      <Input
+                        value={currentEditEq.manufacturer || ""}
+                        onChange={(e) =>
+                          updateEquipment(
+                            editingItem.roomId,
+                            currentEditEq.id,
+                            "manufacturer",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Например: IKEA, Bork, Samsung"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Ссылка на товар
+                      </label>
+                      <Input
+                        value={currentEditEq.url || ""}
+                        onChange={(e) =>
+                          updateEquipment(
+                            editingItem.roomId,
+                            currentEditEq.id,
+                            "url",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="https://..."
+                        type="url"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Комментарий</label>
+                      <Textarea
+                        value={currentEditEq.description || ""}
+                        onChange={(e) =>
+                          updateEquipment(
+                            editingItem.roomId,
+                            currentEditEq.id,
+                            "description",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Особые пожелания по цвету, размеру, расположению..."
+                        rows={3}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <DrawerFooter>
+                <DrawerClose asChild>
+                  <Button className="w-full">Сохранить и закрыть</Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </div>
+          </DrawerContent>
+        </Drawer>
 
         <BottomButtonBlock onBack={onBack} />
       </form>
