@@ -150,7 +150,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
     form.setValue(category, currentSections, { shouldValidate: true });
   };
-  const selectAllRooms = (
+  const toggleAllRooms = (
     category: "floor" | "ceiling" | "walls",
     sectionIndex: number,
   ) => {
@@ -160,7 +160,19 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     if (!section) return;
 
     const allRoomIds = roomList.map((room) => room.id);
-    section.rooms = allRoomIds;
+    const currentSelected = section.rooms || [];
+
+    // Проверяем, выбраны ли уже абсолютно все помещения
+    const isAllSelected =
+      allRoomIds.length > 0 && currentSelected.length === allRoomIds.length;
+
+    if (isAllSelected) {
+      // Если уже выбраны все — очищаем массив (снимаем выбор)
+      section.rooms = [];
+    } else {
+      // Иначе — выбираем все доступные помещения
+      section.rooms = allRoomIds;
+    }
 
     form.setValue(category, currentSections, { shouldValidate: true });
   };
@@ -216,6 +228,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
           {/* Category Header */}
           <Button
             type="button"
+            variant="ghost"
             onClick={() => toggleCategory(category)}
             className="flex items-center justify-between w-full text-left"
           >
@@ -299,14 +312,28 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                       <span className="text-sm font-medium">Помещения:</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="default"
-                        onClick={() => selectAllRooms(category, index)}
-                      >
-                        Все комнаты
-                      </Button>
+                      {(() => {
+                        const allRoomIds = roomList.map((r) => r.id);
+                        const selectedRooms = sections[index]?.rooms || [];
+                        const isAllSelected =
+                          allRoomIds.length > 0 &&
+                          selectedRooms.length === allRoomIds.length;
+
+                        return (
+                          <Button
+                            type="button"
+                            variant={isAllSelected ? "secondary" : "ghost"}
+                            size="default"
+                            onClick={() => toggleAllRooms(category, index)}
+                            className={`text-xs h-9 sm:h-7 px-3 transition-all ${
+                              isAllSelected ? "line-through opacity-60" : ""
+                            }`}
+                          >
+                            {isAllSelected ? "Все комнаты" : "Все комнаты"}
+                          </Button>
+                        );
+                      })()}
+                      
                       {roomList.map((room) => {
                         const isSelected =
                           sections[index]?.rooms?.includes(room.id) || false;
