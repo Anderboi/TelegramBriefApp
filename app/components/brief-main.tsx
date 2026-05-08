@@ -5,14 +5,6 @@ import { useState } from "react";
 import CommonInfoBlock from "./brief-steps/commoninfo-block";
 import { PDFDownloadLink, PDFViewer, StyleSheet } from "@react-pdf/renderer";
 import PDFDocument from "./PDFDocument";
-import {
-  CommonFormValues,
-  ConstructionFormValues,
-  DemolitionType,
-  EquipmentBlockFormValues,
-  PremisesFormValues,
-  ResidentsFormValues,
-} from "@/lib/schemas";
 import ResidentsBlock from "./brief-steps/residents-block";
 import PremisesBlock from "./brief-steps/premises-block";
 import DemolitionBlock from "./brief-steps/demolition-block";
@@ -21,10 +13,18 @@ import EquipmentBlock from "./brief-steps/equipment-block";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Button } from "@/components/ui/button";
 import { useBriefStore } from "@/lib/store/briefStore";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const BriefMain: React.FC = () => {
-  const [step, setStep] = useState<number>(1);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Читаем текущий шаг из URL (по умолчанию 1)
+  const stepParam = searchParams.get("step");
+  const step = stepParam ? parseInt(stepParam, 10) : 1;
+
   const [isHydrated, setIsHydrated] = useState(false);
+
   const store = useBriefStore();
 
   // Решение проблемы Hydration Mismatch в Next.js
@@ -32,12 +32,20 @@ const BriefMain: React.FC = () => {
     setIsHydrated(true);
   }, []);
 
-  const handleNext = () => {
-    setStep(step + 1);
+  const handleNext = (data?: any) => {
+    router.push(`?step=${step + 1}`);
   };
 
   const handleBack = () => {
-    setStep(step - 1);
+    router.push(`?step=${step - 1}`);
+  };
+
+  const handleReset = () => {
+    // Вызов функции очистки (убедитесь, что resetBrief есть в вашем store)
+    if (store.resetBrief) {
+      store.resetBrief();
+    }
+    router.push("?step=1");
   };
 
   // Пока хранилище не загрузилось из localStorage (на клиенте), не рендерим форму,
@@ -117,10 +125,7 @@ const BriefMain: React.FC = () => {
             </PDFDownloadLink>
             <Button
               variant="ghost"
-              onClick={() => {
-                store.resetBrief();
-                setStep(1);
-              }}
+              onClick={handleReset}
               className="flex-1 sm:flex-none"
             >
               Начать заново

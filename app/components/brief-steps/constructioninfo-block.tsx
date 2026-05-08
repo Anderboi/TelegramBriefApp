@@ -213,7 +213,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
       <FormBlock>
         <div className="space-y-4">
           {/* Category Header */}
-          <button
+          <Button
             type="button"
             onClick={() => toggleCategory(category)}
             className="flex items-center justify-between w-full text-left"
@@ -225,7 +225,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
               )}
             </div>
             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </button>
+          </Button>
 
           {/* Category Content */}
           {isExpanded && (
@@ -301,9 +301,8 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
+                        size="default"
                         onClick={() => selectAllRooms(category, index)}
-                        className="text-xs h-7"
                       >
                         Все комнаты
                       </Button>
@@ -314,7 +313,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
                           <Toggle
                             key={room.id}
                             type="button"
-                            size="sm"
+                            size="default"
                             onClick={() => toggleRoom(category, index, room.id)}
                             className={`${
                               isSelected

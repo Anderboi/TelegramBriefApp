@@ -61,16 +61,6 @@ const StyledSelect: React.FC<StyledSelectProps> = ({
       createOptionPosition={createOptionPosition}
       blurInputOnSelect
       menuPlacement="auto"
-      // styles={{
-      //   control: (base) => ({ ...base, zIndex: 90 }),
-      //   menuPortal: (base) => ({ ...base, zIndex: 100 }),
-
-      //   menu: (base) => ({ ...base, zIndex: 9999 }),
-      // }}
-      // menuPortalTarget={document.body}
-      // menuPosition="fixed"
-      // menuShouldScrollIntoView={false}
-      // captureMenuScroll
       {...rest}
     />
   );

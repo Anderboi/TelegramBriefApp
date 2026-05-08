@@ -266,7 +266,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                 <FormItem>
                   {/* <FormLabel>Есть домашние животные?</FormLabel> */}
                   <FormControl>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 px-4 pt-2">
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}

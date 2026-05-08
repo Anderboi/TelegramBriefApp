@@ -24,17 +24,17 @@ interface CommonInfoBlockProps {
 
 const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   const { commonData, setCommonData } = useBriefStore();
-  
+
   const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
     defaultValues: commonData || {
       clientName: "",
       clientSurname: "",
       email: "",
-      phone:  "",
-      address:  "",
-      area:  0,
-      contractNumber:  "",
+      phone: "",
+      address: "",
+      area: 0,
+      contractNumber: "",
       startDate: new Date().toISOString().split("T")[0],
     },
   });
@@ -100,6 +100,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                       {...field}
                       onFocus={(e) => e.target.select()}
                       type="email"
+                      inputMode="email"
                     />
                   </FormControl>
                 </FormItem>
@@ -116,6 +117,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                       {...field}
                       onFocus={(e) => e.target.select()}
                       type="tel"
+                      inputMode="tel"
                     />
                   </FormControl>
                 </FormItem>
@@ -152,6 +154,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                         onFocus={(e) => e.target.select()}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         type="number"
+                        inputMode="numeric"
                         step="1"
                         min="0"
                       />
