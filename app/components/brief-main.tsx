@@ -72,7 +72,7 @@ const BriefMain: React.FC = () => {
 
   return (
     <>
-      <ProgressBar step={step} totalSteps={6} />
+      <ProgressBar step={step} />
       {step === 1 && <CommonInfoBlock onNext={handleNext} />}
       {step === 2 && <ResidentsBlock onNext={handleNext} onBack={handleBack} />}
       {step === 3 && <PremisesBlock onNext={handleNext} onBack={handleBack} />}
