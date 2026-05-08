@@ -40,6 +40,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
   
   const form = useForm<ResidentsFormValues>({
     resolver: zodResolver(ResidentsSchema),
+    mode: "onBlur",
     defaultValues: residentsData || {
       adults: [{ height: 0, gender: "" }],
       children: [],

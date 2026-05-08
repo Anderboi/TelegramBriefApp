@@ -70,6 +70,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
   const form = useForm<EquipmentBlockFormValues>({
     resolver: zodResolver(EquipmentBlockSchema),
+    mode: "onBlur",
     defaultValues: equipmentData || {
       rooms: [],
     },

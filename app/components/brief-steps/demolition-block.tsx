@@ -34,6 +34,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
 
   const form = useForm<DemolitionType>({
     resolver: zodResolver(DemolitionSchema),
+    mode: "onBlur",
     defaultValues: demolitionData || {
       planChange: false,
       entranceDoorChange: false,

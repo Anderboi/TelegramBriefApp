@@ -71,6 +71,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
   const form = useForm<ConstructionFormValues>({
     resolver: zodResolver(ConstructionInfoSchema),
+    mode: "onBlur",
     defaultValues: constructionData || {
       floor: [{ type: "", material: "", rooms: [] }],
       ceiling: [{ type: "", material: "", rooms: [] }],

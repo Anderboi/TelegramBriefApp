@@ -27,6 +27,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
 
   const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
+    mode:"onBlur",
     defaultValues: commonData || {
       clientName: "",
       clientSurname: "",

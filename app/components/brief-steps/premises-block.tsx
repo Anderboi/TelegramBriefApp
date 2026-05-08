@@ -91,6 +91,7 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
 
   const form = useForm<PremisesFormValues>({
     resolver: zodResolver(PremisesSchema),
+    mode: "onBlur",
     defaultValues: {
       rooms:
         premisesData && premisesData.rooms && premisesData.rooms.length > 0
