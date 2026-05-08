@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { toast } from "sonner";
 import { roomList } from "@/lib/templates";
@@ -14,24 +14,36 @@ import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
 import AddButton from "@/components/add-button";
 import RemoveIconButton from "@/components/remove-icon-button";
+import { GripVertical } from "lucide-react";
+
+// DND-kit imports
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface PremisesBlockProps {
   onNext: () => void;
   onBack: () => void;
 }
 
-// const roomTypes = [
-//   { value: "living", label: "Жилая", emoji: "🏠" },
-//   { value: "utility", label: "Хозяйственная", emoji: "🔧" },
-//   { value: "wet", label: "Мокрая зона", emoji: "💧" },
-//   { value: "technical", label: "Техническая", emoji: "⚙️" },
-// ];
-
 // Функция автоматического определения типа помещения
 const autoDetectRoomType = (roomName: string): RoomType | undefined => {
   const name = roomName.toLowerCase().trim();
 
-  // Жилые помещения
   if (
     name.includes("спальн") ||
     name.includes("гостин") ||
@@ -41,8 +53,6 @@ const autoDetectRoomType = (roomName: string): RoomType | undefined => {
   ) {
     return "living";
   }
-
-  // Мокрые зоны
   if (
     name.includes("кухн") ||
     name.includes("ванн") ||
@@ -54,8 +64,6 @@ const autoDetectRoomType = (roomName: string): RoomType | undefined => {
   ) {
     return "wet";
   }
-
-  // Хозяйственные
   if (
     name.includes("гард") ||
     name.includes("клад") ||
@@ -66,8 +74,6 @@ const autoDetectRoomType = (roomName: string): RoomType | undefined => {
   ) {
     return "utility";
   }
-
-  // Технические
   if (
     name.includes("котельн") ||
     name.includes("электрощит") ||
@@ -75,13 +81,95 @@ const autoDetectRoomType = (roomName: string): RoomType | undefined => {
   ) {
     return "technical";
   }
-
   return undefined;
+};
+
+// Отдельный компонент для элемента с поддержкой Drag-and-Drop
+interface SortableRoomItemProps {
+  id: string;
+  index: number;
+  form: UseFormReturn<PremisesFormValues>;
+  options: typeof roomList;
+  handleRoomNameChange: (value: string | null, index: number) => void;
+  handleCreateOption: (inputValue: string, index: number) => void;
+  onRemove: () => void;
+}
+
+const SortableRoomItem: React.FC<SortableRoomItemProps> = ({
+  id,
+  index,
+  form,
+  options,
+  handleRoomNameChange,
+  handleCreateOption,
+  onRemove,
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : 1,
+    opacity: isDragging ? 0.8 : 1,
+  };
+
+  return (
+    <article
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-2 pb-4 border-b last:border-b-0 bg-white relative ${
+        isDragging ? "shadow-md rounded-lg p-2 border" : ""
+      }`}
+    >
+      {/* Кнопка (грип) за которую тянем */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab text-gray-300 hover:text-gray-500 touch-none"
+      >
+        <GripVertical size={20} />
+      </div>
+
+      {/* Выводим index + 1 вместо room.order для всегда правильной визуальной последовательности */}
+      <span className="px-1 w-5 text-center text-sm font-medium">
+        {index + 1}
+      </span>
+
+      <FormField
+        control={form.control}
+        name={`rooms.${index}.name`}
+        render={({ field }) => (
+          <FormItem className="relative w-full">
+            <FormControl>
+              <StyledSelect
+                placeholder="Помещение..."
+                options={options}
+                onChange={(val: any) => handleRoomNameChange(val, index)}
+                value={
+                  options.find((option) => option.value === field.value) || null
+                }
+                onCreateOption={(inputValue: string) =>
+                  handleCreateOption(inputValue, index)
+                }
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <RemoveIconButton onClick={onRemove} />
+    </article>
+  );
 };
 
 const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
   const { premisesData, setPremisesData } = useBriefStore();
-
   const [options, setOptions] = useState(roomList);
 
   const form = useForm<PremisesFormValues>({
@@ -99,15 +187,43 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     fields: roomFields,
     append,
     remove,
+    move, // Извлекаем встроенную функцию move из react-hook-form
   } = useFieldArray({
     control: form.control,
     name: "rooms",
   });
 
+  // Настройка сенсоров для Drag-and-Drop (мышь + касания на телефоне)
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  // Обработчик окончания перетаскивания
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = roomFields.findIndex((item) => item.id === active.id);
+      const newIndex = roomFields.findIndex((item) => item.id === over.id);
+      move(oldIndex, newIndex); // Автоматически меняет элементы местами в форме
+    }
+  };
+
   function onSubmit(data: PremisesFormValues) {
     try {
-      // Обновляем данные в store
-      setPremisesData(data);
+      // ПЕРЕСЧЕТ: Перезаписываем 'order' перед отправкой в стор,
+      // чтобы после всех удалений и сортировок данные в базе были чистыми (1, 2, 3...)
+      const normalizedData = {
+        ...data,
+        rooms: data.rooms.map((room, i) => ({
+          ...room,
+          order: i + 1,
+        })),
+      };
+
+      setPremisesData(normalizedData);
       toast.success("Помещения сохранены");
       onNext();
     } catch (error) {
@@ -121,7 +237,6 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     setOptions((prev) => [...prev, newOption]);
     form.setValue(`rooms.${index}.name`, inputValue);
 
-    // Автоматически определяем тип
     const detectedType = autoDetectRoomType(inputValue);
     if (detectedType) {
       form.setValue(`rooms.${index}.type`, detectedType);
@@ -130,10 +245,8 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
 
   const handleRoomNameChange = (value: string | null, index: number) => {
     if (!value) return;
-
     form.setValue(`rooms.${index}.name`, value);
 
-    // Автоматически определяем тип при изменении названия
     const detectedType = autoDetectRoomType(value);
     if (detectedType) {
       form.setValue(`rooms.${index}.type`, detectedType);
@@ -145,46 +258,31 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <BriefBlockMain title="Состав помещений">
           <FormBlock>
-            {roomFields.map((room, index) => {
-              const currentName = form.watch(`rooms.${index}.name`);
-              const currentType = form.watch(`rooms.${index}.type`);
-              const showTypeSelect = currentName && !currentType;
-
-              return (
-                <article
-                  key={room.id}
-                  className="flex items-center gap-2 pb-4 border-b last:border-b-0"
-                >
-                  {/* <div className="flex  items-center gap-2"> */}
-                  <span className="px-1">{room.order}</span>
-                  <FormField
-                    control={form.control}
-                    name={`rooms.${index}.name`}
-                    render={({ field }) => (
-                      <FormItem className="relative w-full">
-                        <FormControl>
-                          <StyledSelect
-                            placeholder="Помещение..."
-                            options={options}
-                            onChange={(val) => handleRoomNameChange(val, index)}
-                            value={
-                              options.find(
-                                (option) => option.value === field.value,
-                              ) || null
-                            }
-                            onCreateOption={(inputValue) =>
-                              handleCreateOption(inputValue, index)
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={roomFields.map((f) => f.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {roomFields.map((room, index) => (
+                  <SortableRoomItem
+                    key={room.id}
+                    id={room.id}
+                    index={index}
+                    form={form}
+                    options={options}
+                    handleRoomNameChange={handleRoomNameChange}
+                    handleCreateOption={handleCreateOption}
+                    onRemove={() => remove(index)}
                   />
-                  <RemoveIconButton onClick={() => remove(index)} />
-                </article>
-              );
-            })}
+                ))}
+              </SortableContext>
+            </DndContext>
           </FormBlock>
+
           <FormBlock>
             <AddButton
               onClick={() =>
