@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,11 +17,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { DemolitionSchema, DemolitionType } from "@/lib/schemas";
 import FormBlock from "@/components/ui/formblock";
-import BottomButtonBlock from '@/components/ui/bottom-button-block';
-import BriefBlockMain from '@/components/ui/brief-block-main';
+import BottomButtonBlock from "@/components/ui/bottom-button-block";
+import BriefBlockMain from "@/components/ui/brief-block-main";
+import { useBriefStore } from "@/lib/store/briefStore";
 
 interface DemolitionBlockProps {
-  onNext: (data: DemolitionType) => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
@@ -30,9 +30,11 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
   onNext,
   onBack,
 }) => {
+  const { demolitionData, setDemolitionData } = useBriefStore();
+
   const form = useForm<DemolitionType>({
     resolver: zodResolver(DemolitionSchema),
-    defaultValues: {
+    defaultValues: demolitionData || {
       planChange: false,
       entranceDoorChange: false,
       furnitureDemolition: false,
@@ -40,21 +42,12 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
     },
   });
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("demolitionData");
-    if (savedData) {
-      form.reset(JSON.parse(savedData));
-    }
-  }, [form]);
-
   function onSubmit(data: DemolitionType) {
     try {
-      // Save data to localStorage
-      localStorage.setItem("demolitionData", JSON.stringify(data));
-      toast.success("Информация по демонтажу сохранена");
       // Move to the next step
-      onNext(data);
+      setDemolitionData(data);
+      toast.success("Информация по демонтажу сохранена");
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");
@@ -225,7 +218,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
           </FormBlock>
         </BriefBlockMain>
         {/* Кнопка */}
-        <BottomButtonBlock onBack={onBack}/>
+        <BottomButtonBlock onBack={onBack} />
       </form>
     </Form>
   );

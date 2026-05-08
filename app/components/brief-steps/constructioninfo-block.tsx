@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,12 +25,12 @@ import FormBlock from "@/components/ui/formblock";
 import {
   ConstructionFormValues,
   ConstructionInfoSchema,
-  PremisesFormValues,
 } from "@/lib/schemas";
 import { Trash2Icon, ChevronDown, ChevronUp } from "lucide-react";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { Toggle } from "@/components/ui/toggle";
+import { useBriefStore } from "@/lib/store/briefStore";
 
 // Material types for each category
 const floorTypes = [
@@ -56,7 +56,7 @@ const wallTypes = [
 ];
 
 interface ConstructionBlockProps {
-  onNext: (data: ConstructionFormValues) => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
@@ -64,13 +64,14 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
   onNext,
   onBack,
 }) => {
+  const { constructionData, setConstructionData, premisesData } = useBriefStore();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["walls", "ceiling", "floor"])
+    new Set(["walls", "ceiling", "floor"]),
   );
 
   const form = useForm<ConstructionFormValues>({
     resolver: zodResolver(ConstructionInfoSchema),
-    defaultValues: {
+    defaultValues: constructionData || {
       floor: [{ type: "", material: "", rooms: [] }],
       ceiling: [{ type: "", material: "", rooms: [] }],
       walls: [{ type: "", material: "", rooms: [] }],
@@ -106,9 +107,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
   // Get room list from premises data with unique IDs
   const roomList = useMemo(() => {
-    const savedData = localStorage.getItem("premisesData");
-    if (savedData) {
-      const premisesData: PremisesFormValues = JSON.parse(savedData);
+    if (premisesData && premisesData.rooms) {
       return premisesData.rooms.map((room, index) => ({
         id: `room-${index}`,
         name: room.name,
@@ -116,23 +115,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
       }));
     }
     return [];
-  }, []);
-
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("constructionData");
-    if (savedData) {
-      form.reset(JSON.parse(savedData));
-    }
-  }, [form]);
-
-  // Auto-save on form changes
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      localStorage.setItem("constructionData", JSON.stringify(value));
-    });
-    return () => subscription.unsubscribe();
-  }, [form]);
+  }, [premisesData]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => {
@@ -149,7 +132,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
   const toggleRoom = (
     category: "floor" | "ceiling" | "walls",
     sectionIndex: number,
-    roomId: string
+    roomId: string,
   ) => {
     const currentSections = form.getValues(category);
     const section = currentSections[sectionIndex];
@@ -166,10 +149,9 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
     form.setValue(category, currentSections, { shouldValidate: true });
   };
-
   const selectAllRooms = (
     category: "floor" | "ceiling" | "walls",
-    sectionIndex: number
+    sectionIndex: number,
   ) => {
     const currentSections = form.getValues(category);
     const section = currentSections[sectionIndex];
@@ -181,28 +163,26 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 
     form.setValue(category, currentSections, { shouldValidate: true });
   };
-
   function onSubmit(data: ConstructionFormValues) {
     try {
       // Filter out empty sections
       const cleanedData = {
         floor:
           data.floor?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0
+            (item) => item && item.type && item.rooms && item.rooms.length > 0,
           ) || [],
         ceiling:
           data.ceiling?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0
+            (item) => item && item.type && item.rooms && item.rooms.length > 0,
           ) || [],
         walls:
           data.walls?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0
+            (item) => item && item.type && item.rooms && item.rooms.length > 0,
           ) || [],
       };
-
-      localStorage.setItem("constructionData", JSON.stringify(cleanedData));
+      setConstructionData(cleanedData);
       toast.success("Информация по монтажу сохранена");
-      onNext(cleanedData);
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");
@@ -223,7 +203,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
     types: string[],
     fields: any[],
     append: any,
-    remove: any
+    remove: any,
   ) => {
     const sections = form.watch(category);
     const isExpanded = expandedCategories.has(category);
@@ -386,7 +366,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
             wallTypes,
             wallsFields,
             appendWalls,
-            removeWalls
+            removeWalls,
           )}
           {renderMaterialSection(
             "ceiling",
@@ -394,7 +374,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
             ceilingTypes,
             ceilingFields,
             appendCeiling,
-            removeCeiling
+            removeCeiling,
           )}
           {renderMaterialSection(
             "floor",
@@ -402,7 +382,7 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
             floorTypes,
             floorFields,
             appendFloor,
-            removeFloor
+            removeFloor,
           )}
         </BriefBlockMain>
 

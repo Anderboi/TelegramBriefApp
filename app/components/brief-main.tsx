@@ -24,56 +24,27 @@ import { useBriefStore } from "@/lib/store/briefStore";
 
 const BriefMain: React.FC = () => {
   const [step, setStep] = useState<number>(1);
-  const {
-    commonData,
-    residentsData,
-    premisesData,
-    demolitionData,
-    constructionData,
-    equipmentData,
-    setCommonData,
-    setResidentsData,
-    setPremisesData,
-    setDemolitionData,
-    setConstructionData,
-    setEquipmentData
-  } = useBriefStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const store = useBriefStore();
 
-  // Загрузка данных из localStorage при монтировании компонента
+  // Решение проблемы Hydration Mismatch в Next.js
   useEffect(() => {
-    useBriefStore.getState().loadFromStorage();
+    setIsHydrated(true);
   }, []);
 
-  const handleNext = (
-    data:
-      | CommonFormValues
-      | ResidentsFormValues
-      | PremisesFormValues
-      | DemolitionType
-      | ConstructionFormValues
-      | EquipmentBlockFormValues
-  ) => {
-    if (step === 1) {
-      setCommonData(data as CommonFormValues);
-    } else if (step === 2) {
-      setResidentsData(data as ResidentsFormValues);
-    } else if (step === 3) {
-      setPremisesData(data as PremisesFormValues);
-    } else if (step === 4) {
-      setDemolitionData(data as DemolitionType);
-    } else if (step === 5) {
-      setConstructionData(data as ConstructionFormValues);
-    } else if (step === 6) {
-      setEquipmentData(data as EquipmentBlockFormValues);
-    }
-    // Сохранение данных в localStorage при каждом обновлении
-    useBriefStore.getState().saveToStorage();
+  const handleNext = () => {
     setStep(step + 1);
   };
 
   const handleBack = () => {
     setStep(step - 1);
   };
+
+  // Пока хранилище не загрузилось из localStorage (на клиенте), не рендерим форму,
+  // чтобы избежать ошибок гидратации Next.js
+  if (!isHydrated) {
+    return null; // или лоадер <div className="spinner">Загрузка...</div>
+  }
 
   const styles = StyleSheet.create({
     downloadButton: {
@@ -106,10 +77,10 @@ const BriefMain: React.FC = () => {
       {step === 6 && <EquipmentBlock onNext={handleNext} onBack={handleBack} />}
       {/* Add other steps here */}
       {step > 6 &&
-        commonData &&
-        residentsData &&
-        premisesData &&
-        demolitionData && (
+        store.commonData &&
+        store.residentsData &&
+        store.premisesData &&
+        store.demolitionData && (
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-bold">
               Вы успешно заполнили техниеское задание на разработку
@@ -124,43 +95,49 @@ const BriefMain: React.FC = () => {
               style={styles.downloadButton}
               document={
                 <PDFDocument
-                  commonData={commonData}
-                  residentsData={residentsData || undefined}
-                  premisesData={premisesData || undefined}
-                  constructionData={constructionData || undefined}
-                  demolitionData={demolitionData || undefined}
-                  equipmentData={equipmentData || undefined}
+                  commonData={store.commonData}
+                  residentsData={store.residentsData || undefined}
+                  premisesData={store.premisesData || undefined}
+                  constructionData={store.constructionData || undefined}
+                  demolitionData={store.demolitionData || undefined}
+                  equipmentData={store.equipmentData || undefined}
                 />
               }
-              fileName={`brief_${commonData.clientSurname}_${
+              fileName={`brief_${store.commonData.clientSurname}_${
                 new Date().toISOString().split("T")[0]
               }.pdf`}
             >
               {({ loading }) => (
                 <>
-                {/* <Button className="flex-1 sm:flex-none" disabled={loading}> */}
+                  {/* <Button className="flex-1 sm:flex-none" disabled={loading}> */}
                   {loading ? "Подготовка документа..." : "Скачать PDF"}
-                {/* </Button> */}
+                  {/* </Button> */}
                 </>
               )}
             </PDFDownloadLink>
             <Button
               variant="ghost"
-              onClick={() => setStep(1)}
+              onClick={() => {
+                store.resetBrief();
+                setStep(1);
+              }}
               className="flex-1 sm:flex-none"
             >
               Начать заново
             </Button>
 
             {/* Temp PDF prewiew */}
-            <PDFViewer style={{ width: "100%", height: "500px" }}>
+            <PDFViewer
+              style={{ width: "100%", height: "500px" }}
+              className="hidden md:block"
+            >
               <PDFDocument
-                commonData={commonData}
-                residentsData={residentsData || undefined}
-                premisesData={premisesData || undefined}
-                constructionData={constructionData || undefined}
-                demolitionData={demolitionData || undefined}
-                equipmentData={equipmentData || undefined}
+                commonData={store.commonData}
+                residentsData={store.residentsData || undefined}
+                premisesData={store.premisesData || undefined}
+                constructionData={store.constructionData || undefined}
+                demolitionData={store.demolitionData || undefined}
+                equipmentData={store.equipmentData || undefined}
               />
             </PDFViewer>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
@@ -8,7 +8,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
 } from "@/components/ui/form";
 import { Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,12 +18,10 @@ import FormBlock from "@/components/ui/formblock";
 import StyledSelect from "@/components/ui/styled-creatable-select";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
-// import { useFormPersistence } from '@/lib/hooks/useFormPersistance';
-// import { STORAGE_KEYS } from '@/lib/constants';
 import { useBriefStore } from "@/lib/store/briefStore";
 
 interface PremisesBlockProps {
-  onNext: (data: PremisesFormValues) => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
@@ -111,24 +108,12 @@ const PremisesBlock: React.FC<PremisesBlockProps> = ({ onNext, onBack }) => {
     name: "rooms",
   });
 
-  // Обновляем форму при изменении данных в store
-  useEffect(() => {
-    if (premisesData) {
-      form.reset({
-        rooms:
-          premisesData && premisesData.rooms && premisesData.rooms.length > 0
-            ? premisesData.rooms
-            : [{ name: "", order: 1, type: undefined }],
-      });
-    }
-  }, [premisesData, form]);
-
   function onSubmit(data: PremisesFormValues) {
     try {
       // Обновляем данные в store
       setPremisesData(data);
       toast.success("Помещения сохранены");
-      onNext(data);
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");

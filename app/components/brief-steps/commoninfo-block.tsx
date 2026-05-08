@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Form,
   FormControl,
@@ -19,7 +19,7 @@ import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
 
 interface CommonInfoBlockProps {
-  onNext: (data: CommonFormValues) => void;
+  onNext: () => void;
 }
 
 const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
@@ -27,33 +27,17 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
   
   const form = useForm<CommonFormValues>({
     resolver: zodResolver(CommonDataSchema),
-    defaultValues: {
-      clientName: commonData?.clientName || "",
-      clientSurname: commonData?.clientSurname || "",
-      email: commonData?.email || "",
-      phone: commonData?.phone || "",
-      address: commonData?.address || "",
-      area: commonData?.area || 0,
-      contractNumber: commonData?.contractNumber || "",
-      startDate: commonData?.startDate || new Date().toISOString().split("T")[0],
+    defaultValues: commonData || {
+      clientName: "",
+      clientSurname: "",
+      email: "",
+      phone:  "",
+      address:  "",
+      area:  0,
+      contractNumber:  "",
+      startDate: new Date().toISOString().split("T")[0],
     },
   });
-
-  // Обновляем форму при изменении данных в store
-  useEffect(() => {
-    if (commonData) {
-      form.reset({
-        clientName: commonData.clientName || "",
-        clientSurname: commonData.clientSurname || "",
-        email: commonData.email || "",
-        phone: commonData.phone || "",
-        address: commonData.address || "",
-        area: commonData.area || 0,
-        contractNumber: commonData.contractNumber || "",
-        startDate: commonData.startDate || new Date().toISOString().split("T")[0],
-      });
-    }
- }, [commonData, form]);
 
   const handleSubmit = (data: CommonFormValues) => {
     try {
@@ -61,7 +45,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
       setCommonData(data);
       toast.success("Общая информация по объекту заполнена");
       // Move to the next step
-      onNext(data);
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");

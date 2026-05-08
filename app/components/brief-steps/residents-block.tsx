@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -31,7 +31,7 @@ import BriefBlockMain from '@/components/ui/brief-block-main';
 import { useBriefStore } from "@/lib/store/briefStore";
 
 interface ResidentsBlockProps {
-  onNext: (data: ResidentsFormValues) => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
@@ -40,7 +40,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
   
   const form = useForm<ResidentsFormValues>({
     resolver: zodResolver(ResidentsSchema),
-    defaultValues: {
+    defaultValues: residentsData || {
       adults: [{ height: 0, gender: "" }],
       children: [],
       hasPets: false,
@@ -78,21 +78,13 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
 
   const watchHasPets = watch("hasPets");
 
-  // Load data from localStorage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem("residentsData");
-    if (savedData) {
-      form.reset(JSON.parse(savedData));
-    }
-  }, [form]);
-
   function onSubmit(data: ResidentsFormValues) {
     try {
       // Save data to localStorage
-      localStorage.setItem("residentsData", JSON.stringify(data));
+      setResidentsData(data);
       toast.success("Информация о проживающих заполнена");
       // Move to the next step
-      onNext(data);
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");
@@ -101,18 +93,13 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
 
   return (
     <Form {...form}>
-      <form
-        className="w-full"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+      <form className="w-full" onSubmit={form.handleSubmit(onSubmit)}>
         <BriefBlockMain title="Проживающие">
           {/* Взрослые */}
           <FormBlock title="Взрослые">
             <>
               {adultFields.map((block, index) => (
-                <div key={block.id} 
-                className="flex items-end space-x-2"
-                >
+                <div key={block.id} className="flex items-end space-x-2">
                   <FormField
                     control={control}
                     name={`adults.${index}.height`}
@@ -126,6 +113,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                             max={280}
                             placeholder="Рост (см)"
                             type="number"
+                            inputMode="numeric"
                             onFocus={(e) => e.target.select()}
                             onChange={(event) =>
                               field.onChange(+event.target.value)
@@ -187,9 +175,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           {/* Дети */}
           <FormBlock title="Дети">
             {childFields.map((field, index) => (
-              <div key={field.id} 
-              className="flex items-end space-x-2"
-              >
+              <div key={field.id} className="flex items-end space-x-2">
                 <FormField
                   control={control}
                   name={`children.${index}.age`}
@@ -203,6 +189,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
                           max={18}
                           placeholder="Возраст"
                           type="number"
+                          inputMode="numeric"
                           className="w-full"
                           onChange={(event) =>
                             field.onChange(+event.target.value)

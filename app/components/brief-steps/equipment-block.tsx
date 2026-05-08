@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { v4 as uuidv4 } from "uuid";
@@ -12,7 +12,6 @@ import FormBlock from "@/components/ui/formblock";
 import {
   EquipmentBlockFormValues,
   EquipmentBlockSchema,
-  PremisesFormValues,
   Equipment,
   getMemoizedEquipmentSuggestions,
 } from "@/lib/schemas";
@@ -21,34 +20,31 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
+import { useBriefStore } from "@/lib/store/briefStore";
 
 interface EquipmentBlockProps {
-  onNext: (data: EquipmentBlockFormValues) => void;
+  onNext: () => void;
   onBack: () => void;
 }
 
 const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
+  const { equipmentData, setEquipmentData, premisesData } = useBriefStore();
   const [expandedRooms, setExpandedRooms] = useState<Set<string>>(new Set());
   const [expandedEquipment, setExpandedEquipment] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [roomsEquipment, setRoomsEquipment] = useState<{
     [roomId: string]: Equipment[];
   }>(() => {
-    const savedData = localStorage.getItem("equipmentData");
-    if (savedData) {
-      const data = JSON.parse(savedData);
+    if (equipmentData && equipmentData.rooms.length > 0) {
       const equipmentMap: { [roomId: string]: Equipment[] } = {};
-
-      data.rooms?.forEach((room: any) => {
+      equipmentData.rooms.forEach((room: any) => {
         equipmentMap[room.room_id] = room.equipment || [];
       });
       return equipmentMap;
     }
 
-    const savedPremises = localStorage.getItem("premisesData");
-    if (savedPremises) {
-      const premisesData: PremisesFormValues = JSON.parse(savedPremises);
+    if (premisesData && premisesData.rooms) {
       const initialEquipment: { [roomId: string]: Equipment[] } = {};
       premisesData.rooms.forEach((room, index) => {
         initialEquipment[`room-${index}`] = [];
@@ -61,9 +57,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
 
   // Get rooms from premises data
   const rooms = useMemo(() => {
-    const savedData = localStorage.getItem("premisesData");
-    if (savedData) {
-      const premisesData: PremisesFormValues = JSON.parse(savedData);
+    if (premisesData && premisesData.rooms) {
       return premisesData.rooms.map((room, index) => ({
         id: `room-${index}`,
         name: room.name,
@@ -72,28 +66,14 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
       }));
     }
     return [];
-  }, []);
+  }, [premisesData]);
 
   const form = useForm<EquipmentBlockFormValues>({
     resolver: zodResolver(EquipmentBlockSchema),
-    defaultValues: {
+    defaultValues: equipmentData || {
       rooms: [],
     },
   });
-
-  // Auto-save on changes
-  useEffect(() => {
-    if (Object.keys(roomsEquipment).length === 0) return;
-
-    const data = {
-      rooms: rooms.map((room) => ({
-        room_id: room.id,
-        room_name: room.name,
-        equipment: roomsEquipment[room.id] || [],
-      })),
-    };
-    localStorage.setItem("equipmentData", JSON.stringify(data));
-  }, [roomsEquipment, rooms]);
 
   const toggleRoom = (roomId: string) => {
     setExpandedRooms((prev) => {
@@ -122,7 +102,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
   const addEquipmentFromSuggestion = (
     roomId: string,
     name: string,
-    category?: string
+    category?: string,
   ) => {
     const newEquipment: Equipment = {
       id: uuidv4(),
@@ -152,12 +132,12 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
     roomId: string,
     equipmentId: string,
     field: keyof Equipment,
-    value: any
+    value: any,
   ) => {
     setRoomsEquipment((prev) => ({
       ...prev,
       [roomId]: prev[roomId].map((eq) =>
-        eq.id === equipmentId ? { ...eq, [field]: value } : eq
+        eq.id === equipmentId ? { ...eq, [field]: value } : eq,
       ),
     }));
   };
@@ -171,10 +151,9 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
           equipment: roomsEquipment[room.id] || [],
         })),
       };
-
-      localStorage.setItem("equipmentData", JSON.stringify(data));
+      setEquipmentData(data);
       toast.success("Наполнение помещений сохранено");
-      onNext(data);
+      onNext();
     } catch (error) {
       console.error(error);
       toast.error("Ошибка при попытке сохранения данных");
@@ -193,13 +172,13 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
             const suggestions = useMemo(() => {
               const allSuggestions = getMemoizedEquipmentSuggestions(
                 room.name,
-                room.type
+                room.type,
               );
               const selectedNames = new Set(equipment.map((eq) => eq.name));
               // Фильтруем suggestions, убирая уже выбранные
               return allSuggestions.filter(
                 (s: { name: string; category: string }) =>
-                  !selectedNames.has(s.name)
+                  !selectedNames.has(s.name),
               );
             }, [room.name, room.type, equipment]);
 
@@ -241,7 +220,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                             {suggestions.map(
                               (
                                 suggestion: { name: string; category: string },
-                                idx: number
+                                idx: number,
                               ) => (
                                 <button
                                   key={idx}
@@ -250,14 +229,14 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                     addEquipmentFromSuggestion(
                                       room.id,
                                       suggestion.name,
-                                      suggestion.category
+                                      suggestion.category,
                                     );
                                   }}
                                   className="px-3 py-1.5 rounded-full text-sm transition-colors bg-white text-black border border-gray-300 hover:bg-gray-50"
                                 >
                                   {suggestion.name}
                                 </button>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -275,7 +254,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                             addEquipmentFromSuggestion(
                               room.id,
                               e.currentTarget.value.trim(),
-                              "Другое"
+                              "Другое",
                             );
                             e.currentTarget.value = "";
                           }
@@ -290,7 +269,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                           </p>
                           {equipment.map((eq) => {
                             const isDetailsExpanded = expandedEquipment.has(
-                              eq.id
+                              eq.id,
                             );
                             return (
                               <div
@@ -306,7 +285,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                         room.id,
                                         eq.id,
                                         "name",
-                                        e.target.value
+                                        e.target.value,
                                       )
                                     }
                                     placeholder="Название"
@@ -320,7 +299,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                         room.id,
                                         eq.id,
                                         "quantity",
-                                        parseInt(e.target.value) || 1
+                                        parseInt(e.target.value) || 1,
                                       )
                                     }
                                     placeholder="Кол-во"
@@ -364,7 +343,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                           room.id,
                                           eq.id,
                                           "manufacturer",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       placeholder="Производитель (необязательно)"
@@ -376,7 +355,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                           room.id,
                                           eq.id,
                                           "url",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       placeholder="Ссылка на товар (необязательно)"
@@ -388,7 +367,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                           room.id,
                                           eq.id,
                                           "description",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       placeholder="Комментарий (необязательно)"
