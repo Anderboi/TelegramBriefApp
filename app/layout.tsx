@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
@@ -16,6 +16,23 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Minimal Brief",
   description: "Создание технического задания и загрузка в PDF",
+  applicationName: "Minimal Brief",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Minimal Brief",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1, // Предотвращает зум при фокусе на инпутах в iOS
+  userScalable: false,
 };
 
 export default function RootLayout({
