@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontFamily: "Roboto",
-    fontSize: 10,
+    fontSize: 12,
   },
   title: {
     fontSize: 36,
@@ -53,12 +53,12 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   sectionTitle: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "bold",
     marginBottom: 2,
   },
   sectionSubtitle: {
-    fontSize: 9,
+    fontSize: 11,
     color: "#666",
     marginBottom: 5,
   },
@@ -67,12 +67,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontSize: 8,
+    fontSize: 10,
     color: "#666",
     marginBottom: 2,
   },
   value: {
-    fontSize: 10,
+    fontSize: 12,
     marginBottom: 8,
   },
   grid: {
@@ -124,10 +124,42 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
   demolitionData,
   equipmentData,
 }) => {
+  const getRoomNamesByIds = (roomIds: string[]) => {
+    if (!premisesData || !premisesData.rooms || !roomIds) return "";
+    // const roomOrder = roomIds.map((id) => id + 1);
+    return premisesData.rooms
+      .filter((room) => room.order)
+      .map((room) => room.name)
+      .join(", ");
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Техническое задание</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            marginBottom: 24,
+            borderBottom: "2 solid #000",
+            paddingBottom: 10,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 32,
+              fontWeight: "ultrabold",
+              textTransform: "uppercase",
+            }}
+          >
+            Техническое задание
+          </Text>
+          <Text style={{ fontSize: 10, color: "#666", paddingBottom: 5 }}>
+            Дата: {new Date().toLocaleDateString("ru-RU")}
+          </Text>
+        </View>
+        {/* <Text style={styles.title}>Техническое задание</Text> */}
 
         {/* Раздел 1: Информация о клиенте */}
         <View style={styles.section}>
@@ -266,6 +298,23 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
             </View>
           </View>
         )}
+        <Text
+          style={{
+            position: "absolute",
+            fontSize: 8,
+            bottom: 30,
+            left: 40,
+            right: 40,
+            textAlign: "center",
+            color: "grey",
+            borderTop: "0.5 solid #ddd",
+            paddingTop: 10,
+          }}
+          render={({ pageNumber, totalPages }) =>
+            `Техническое задание — ${commonData.clientSurname || "Клиент"} — Страница ${pageNumber} из ${totalPages}`
+          }
+          fixed
+        />
       </Page>
 
       {/* Страница 2: Помещения и Отделка */}
@@ -287,7 +336,7 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                           {room.order}
                         </Text>
                         <Text style={styles.tableCell}>{room.name}</Text>
-                        <Text style={styles.tableCell}>
+                        {/* <Text style={styles.tableCell}>
                           {room.type === "living"
                             ? "Жилая"
                             : room.type === "wet"
@@ -297,7 +346,7 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                             : room.type === "technical"
                             ? "Техническая"
                             : "—"}
-                        </Text>
+                        </Text> */}
                       </View>
                     ))}
                   </View>
@@ -374,11 +423,16 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                       <View style={{ marginBottom: 10 }}>
                         <Text style={styles.label}>Стены:</Text>
                         {constructionData.walls.map((wall, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {wall?.type || "—"}
-                            {wall?.material && ` (${wall.material})`}
-                            {wall?.rooms && ` - ${wall.rooms.length} помещений`}
-                          </Text>
+                          <div key={index}>
+                            <Text style={styles.listItem}>
+                              • {wall?.type || "—"}
+                              {wall?.material && ` (${wall.material})`}
+                            </Text>
+                            <Text style={styles.listItem}>
+                              {wall?.rooms &&
+                                getRoomNamesByIds(wall.rooms || [])}
+                            </Text>
+                          </div>
                         ))}
                       </View>
                     )}
@@ -388,12 +442,16 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                       <View style={{ marginBottom: 10 }}>
                         <Text style={styles.label}>Потолок:</Text>
                         {constructionData.ceiling.map((ceiling, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {ceiling?.type || "—"}
-                            {ceiling?.material && ` (${ceiling.material})`}
-                            {ceiling?.rooms &&
-                              ` - ${ceiling.rooms.length} помещений`}
-                          </Text>
+                          <div key={index}>
+                            <Text key={index} style={styles.listItem}>
+                              • {ceiling?.type || "—"}
+                              {ceiling?.material && ` (${ceiling.material})`}
+                            </Text>
+                            <Text style={styles.listItem}>
+                              {ceiling?.rooms &&
+                                getRoomNamesByIds(ceiling.rooms || [])}
+                            </Text>
+                          </div>
                         ))}
                       </View>
                     )}
@@ -403,12 +461,16 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                       <View style={{ marginBottom: 10 }}>
                         <Text style={styles.label}>Напольные покрытия:</Text>
                         {constructionData.floor.map((floor, index) => (
-                          <Text key={index} style={styles.listItem}>
-                            • {floor?.type || "—"}
-                            {floor?.material && ` (${floor.material})`}
-                            {floor?.rooms &&
-                              ` - ${floor.rooms.length} помещений`}
-                          </Text>
+                          <div key={index}>
+                            <Text key={index} style={styles.listItem}>
+                              • {floor?.type || "—"}
+                              {floor?.material && ` (${floor.material})`}
+                            </Text>
+                            <Text style={styles.listItem}>
+                              {floor?.rooms &&
+                                getRoomNamesByIds(floor.rooms || [])}
+                            </Text>
+                          </div>
                         ))}
                       </View>
                     )}
@@ -416,6 +478,23 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
               </View>
             </View>
           )}
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: 8,
+              bottom: 30,
+              left: 40,
+              right: 40,
+              textAlign: "center",
+              color: "grey",
+              borderTop: "0.5 solid #ddd",
+              paddingTop: 10,
+            }}
+            render={({ pageNumber, totalPages }) =>
+              `Техническое задание — ${commonData.clientSurname || "Клиент"} — Страница ${pageNumber} из ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       )}
 
@@ -423,41 +502,146 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
       {equipmentData && equipmentData.rooms.length > 0 && (
         <Page size="A4" style={styles.page}>
           <View style={styles.section}>
-            <View style={styles.grid}>
-              <View style={styles.gridKey}>
-                <Text style={styles.sectionTitle}>Раздел 7</Text>
-                <Text style={styles.sectionSubtitle}>Наполнение помещений</Text>
-              </View>
-              <View style={styles.gridValue}>
-                {equipmentData.rooms.map((room, roomIndex) => (
-                  <View key={roomIndex} style={{ marginBottom: 15 }}>
-                    <Text style={styles.label}>{room.room_name}</Text>
-                    {room.equipment && room.equipment.length > 0 ? (
-                      <View style={styles.table}>
-                        {room.equipment.map((item, itemIndex) => (
-                          <View key={itemIndex} style={styles.tableRow}>
-                            <Text style={[styles.tableCell, { flex: 2 }]}>
-                              {item.name}
-                            </Text>
-                            <Text style={styles.tableCell}>
-                              {item.quantity || 1} шт
-                            </Text>
-                            {item.manufacturer && (
-                              <Text style={styles.tableCell}>
-                                {item.manufacturer}
-                              </Text>
-                            )}
-                          </View>
-                        ))}
+            {/* ИЗМЕНЕНИЕ 1: Убрали styles.grid. Заголовок теперь сверху! */}
+            <View style={{ marginBottom: 16 }}>
+              <Text style={styles.sectionTitle}>Раздел 7</Text>
+              <Text style={styles.sectionSubtitle}>Наполнение помещений</Text>
+            </View>
+
+            {/* Контент идет на всю ширину страницы */}
+            <View>
+              {equipmentData.rooms.map((room, roomIndex) => (
+                <View key={roomIndex} style={{ marginBottom: 15 }}>
+                  <Text
+                    style={[
+                      styles.label,
+                      {
+                        fontSize: 12,
+                        fontWeight: "bold",
+                        color: "#000",
+                        marginBottom: 6,
+                      },
+                    ]}
+                  >
+                    {room.room_name}
+                  </Text>
+
+                  {room.equipment && room.equipment.length > 0 ? (
+                    <View style={styles.table}>
+                      {/* Опционально: Шапка таблицы для красоты */}
+                      <View
+                        style={[
+                          styles.tableRow,
+                          { borderBottom: "1 solid #000", marginBottom: 4 },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.tableCell,
+                            { flex: 2, fontWeight: "bold" },
+                          ]}
+                        >
+                          Наименование
+                        </Text>
+                        <Text
+                          style={[styles.tableCell, { fontWeight: "bold" }]}
+                        >
+                          Кол-во
+                        </Text>
+                        <Text
+                          style={[styles.tableCell, { fontWeight: "bold" }]}
+                        >
+                          Производитель
+                        </Text>
                       </View>
-                    ) : (
-                      <Text style={styles.listItem}>—</Text>
-                    )}
-                  </View>
-                ))}
+
+                      {room.equipment.map((item, itemIndex) => (
+                        // ИЗМЕНЕНИЕ 2: Вернули wrap={false} ТОЛЬКО на строку таблицы, чтобы ее не рвало пополам
+                        <View
+                          key={itemIndex}
+                          style={styles.tableRow}
+                          wrap={false}
+                        >
+                          <Text style={[styles.tableCell, { flex: 2 }]}>
+                            {item.name}
+                          </Text>
+                          <Text style={styles.tableCell}>
+                            {item.quantity || 1} шт
+                          </Text>
+                          {/* ИЗМЕНЕНИЕ 3: Ячейка рендерится ВСЕГДА, иначе колонки сломаются */}
+                          <Text style={styles.tableCell}>
+                            {item.manufacturer || "—"}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={styles.listItem}>Нет оборудования</Text>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Блок подписей */}
+          <View
+            style={{ marginTop: 50, paddingTop: 20, borderTop: "1 solid #000" }}
+            wrap={false}
+          >
+            <Text
+              style={{ fontSize: 12, fontWeight: "bold", marginBottom: 20 }}
+            >
+              Техническое задание согласовано:
+            </Text>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flex: 1, paddingRight: 20 }}>
+                <Text style={styles.label}>Заказчик</Text>
+                <View
+                  style={{
+                    borderBottom: "1 solid #000",
+                    height: 30,
+                    marginBottom: 5,
+                  }}
+                ></View>
+                <Text style={{ fontSize: 8, color: "#666" }}>
+                  / {commonData.clientSurname} {commonData.clientName} /
+                </Text>
+              </View>
+              <View style={{ flex: 1, paddingLeft: 20 }}>
+                <Text style={styles.label}>Исполнитель (Дизайнер)</Text>
+                <View
+                  style={{
+                    borderBottom: "1 solid #000",
+                    height: 30,
+                    marginBottom: 5,
+                  }}
+                ></View>
+                <Text style={{ fontSize: 8, color: "#666" }}>
+                  / ФИО Дизайнера /
+                </Text>
               </View>
             </View>
           </View>
+
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: 8,
+              bottom: 30,
+              left: 40,
+              right: 40,
+              textAlign: "center",
+              color: "grey",
+              borderTop: "0.5 solid #ddd",
+              paddingTop: 10,
+            }}
+            render={({ pageNumber, totalPages }) =>
+              `Техническое задание — ${commonData.clientSurname || "Клиент"} — Страница ${pageNumber} из ${totalPages}`
+            }
+            fixed
+          />
         </Page>
       )}
     </Document>
