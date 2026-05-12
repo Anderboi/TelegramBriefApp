@@ -62,8 +62,8 @@ const BriefMain: React.FC = () => {
       color: "white",
       paddingLeft: 24,
       paddingRight: 24,
-      paddingTop: 8,
-      paddingBottom: 8,
+      paddingTop: 12,
+      paddingBottom: 12,
       borderRadius: 8,
       fontWeight: "bold",
       alignSelf: "center",
@@ -124,9 +124,10 @@ const BriefMain: React.FC = () => {
               )}
             </PDFDownloadLink>
             <Button
-              variant="ghost"
+              variant="secondary"
+              size={'lg'}
               onClick={handleReset}
-              className="flex-1 sm:flex-none"
+              className="//flex-1 //sm:flex-none mt-2 shadow-lg border"
             >
               Начать заново
             </Button>
