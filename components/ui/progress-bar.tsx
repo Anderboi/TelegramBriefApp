@@ -13,6 +13,7 @@ const steps = [
   { id: 4, label: "Демонтаж" },
   { id: 5, label: "Монтаж" },
   { id: 6, label: "Наполнение" },
+  { id: 7, label: "Инженерия" },
 ];
 
 export const ProgressBar = ({

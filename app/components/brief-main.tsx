@@ -10,6 +10,7 @@ import PremisesBlock from "./brief-steps/premises-block";
 import DemolitionBlock from "./brief-steps/demolition-block";
 import ConstructionInfoBlock from "./brief-steps/constructioninfo-block";
 import EquipmentBlock from "./brief-steps/equipment-block";
+import EngineeringBlock from './brief-steps/engineering-block';
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { Button } from "@/components/ui/button";
 import { useBriefStore } from "@/lib/store/briefStore";
@@ -83,8 +84,9 @@ const BriefMain: React.FC = () => {
         <ConstructionInfoBlock onNext={handleNext} onBack={handleBack} />
       )}
       {step === 6 && <EquipmentBlock onNext={handleNext} onBack={handleBack} />}
+      {step === 7 && <EngineeringBlock onNext={handleNext} onBack={handleBack} />}
       {/* Add other steps here */}
-      {step > 6 &&
+      {step > 7 &&
         store.commonData &&
         store.residentsData &&
         store.premisesData &&
@@ -109,6 +111,7 @@ const BriefMain: React.FC = () => {
                   constructionData={store.constructionData || undefined}
                   demolitionData={store.demolitionData || undefined}
                   equipmentData={store.equipmentData || undefined}
+                  engineeringData={store.engineeringData || undefined}
                 />
               }
               fileName={`brief_${store.commonData.clientSurname}_${
@@ -127,7 +130,7 @@ const BriefMain: React.FC = () => {
               variant="secondary"
               size={'lg'}
               onClick={handleReset}
-              className="//flex-1 //sm:flex-none mt-2 shadow-lg border"
+              className="mt-2 shadow-lg border"
             >
               Начать заново
             </Button>
@@ -144,6 +147,7 @@ const BriefMain: React.FC = () => {
                 constructionData={store.constructionData || undefined}
                 demolitionData={store.demolitionData || undefined}
                 equipmentData={store.equipmentData || undefined}
+                engineeringData={store.engineeringData || undefined}
               />
             </PDFViewer>
           </div>

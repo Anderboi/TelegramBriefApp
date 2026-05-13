@@ -7,6 +7,7 @@ import {
   DemolitionType,
   ConstructionFormValues,
   EquipmentBlockFormValues,
+  EngineeringSystemsType,
 } from "@/lib/schemas";
 
 interface BriefState {
@@ -17,6 +18,7 @@ interface BriefState {
   demolitionData: DemolitionType | null;
   constructionData: ConstructionFormValues | null;
   equipmentData: EquipmentBlockFormValues | null;
+  engineeringData: EngineeringSystemsType | null;
 
   // Методы для обновления данных
   setCommonData: (data: CommonFormValues) => void;
@@ -25,6 +27,7 @@ interface BriefState {
   setDemolitionData: (data: DemolitionType) => void;
   setConstructionData: (data: ConstructionFormValues) => void;
   setEquipmentData: (data: EquipmentBlockFormValues) => void;
+  setEngineeringData: (data: any) => void;
 
   resetBrief: () => void;
 }
@@ -37,6 +40,7 @@ const STORAGE_KEYS = {
   DEMOLITION: "demolitionData",
   CONSTRUCTION: "constructionData",
   EQUIPMENT: "equipmentData",
+  ENGINEERING: "engineeringData",
 };
 
 export const useBriefStore = create<BriefState>()(
@@ -49,6 +53,7 @@ export const useBriefStore = create<BriefState>()(
       demolitionData: null,
       constructionData: null,
       equipmentData: null,
+      engineeringData: null,
 
       // Методы для обновления данных
       setCommonData: (data) => set({ commonData: data }),
@@ -57,6 +62,7 @@ export const useBriefStore = create<BriefState>()(
       setDemolitionData: (data) => set({ demolitionData: data }),
       setConstructionData: (data) => set({ constructionData: data }),
       setEquipmentData: (data) => set({ equipmentData: data }),
+      setEngineeringData: (data) => set({ engineeringData: data }),
 
       resetBrief: () =>
         set({
@@ -66,6 +72,7 @@ export const useBriefStore = create<BriefState>()(
           demolitionData: null,
           constructionData: null,
           equipmentData: null,
+          engineeringData: null,
         }),
     }),
     {

@@ -14,6 +14,7 @@ import {
   ConstructionFormValues,
   DemolitionType,
   EquipmentBlockFormValues,
+  EngineeringSystemsType,
 } from "@/lib/schemas";
 
 // Регистрация шрифтов для поддержки кириллицы
@@ -114,6 +115,7 @@ interface BriefPDFDocumentProps {
   constructionData?: ConstructionFormValues;
   demolitionData?: DemolitionType;
   equipmentData?: EquipmentBlockFormValues;
+  engineeringData?: EngineeringSystemsType;
 }
 
 const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
@@ -123,6 +125,7 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
   constructionData,
   demolitionData,
   equipmentData,
+  engineeringData,
 }) => {
   const getRoomNamesByIds = (roomIds: string[]) => {
     if (!premisesData || !premisesData.rooms || !roomIds) return "";
