@@ -40,3 +40,31 @@ export const WALL_TYPES = [
   "Плитка",
   "Другое",
 ] as const;
+
+export const CONSTRUCTION_CATEGORIES = [
+  {
+    key: "walls" as const,
+    title: "Стены",
+    types: ["Покраска", "Обои", "Декоративная штукатурка", "Плитка", "Другое"],
+  },
+  {
+    key: "ceiling" as const,
+    title: "Потолок",
+    types: ["Натяжной потолок", "Покраска", "Гипсокартонный потолок", "Другое"],
+  },
+  {
+    key: "floor" as const,
+    title: "Напольные покрытия",
+    types: [
+      "Керамогранит",
+      "Ламинат",
+      "Паркет",
+      "Инженерная доска",
+      "Линолеум",
+      "Другое",
+    ],
+  },
+] as const;
+
+export type ConstructionCategory = (typeof CONSTRUCTION_CATEGORIES)[number]["key"];
+export const OTHER_TYPE = "Другое" as const;

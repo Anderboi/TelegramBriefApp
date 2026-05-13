@@ -1,63 +1,28 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useState, useMemo, useCallback } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import FormBlock from "@/components/ui/formblock";
-import { ConstructionFormValues, ConstructionInfoSchema } from "@/lib/schemas";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import BottomButtonBlock from "@/components/ui/bottom-button-block";
-import BriefBlockMain from "@/components/ui/brief-block-main";
-import { Toggle } from "@/components/ui/toggle";
-import { useBriefStore } from "@/lib/store/briefStore";
-import AddButton from "@/components/add-button";
-import RemoveIconButton from "@/components/remove-icon-button";
 
-// Material types for each category
-const floorTypes = [
-  "Керамогранит",
-  "Ламинат",
-  "Паркет",
-  "Инженерная доска",
-  "Линолеум",
-  "Другое",
-];
-const ceilingTypes = [
-  "Натяжной потолок",
-  "Покраска",
-  "Гипсокартонный потолок",
-  "Другое",
-];
-const wallTypes = [
-  "Покраска",
-  "Обои",
-  "Декоративная штукатурка",
-  "Плитка",
-  "Другое",
-];
+import { Form } from "@/components/ui/form";
+import BriefBlockMain from "@/components/ui/brief-block-main";
+import BottomButtonBlock from "@/components/ui/bottom-button-block";
+
+import { ConstructionFormValues, ConstructionInfoSchema } from "@/lib/schemas";
+import { useBriefStore } from "@/lib/store/briefStore";
+import { CONSTRUCTION_CATEGORIES, ConstructionCategory } from "@/lib/constants";
+import { useRoomToggle } from '@/lib/hooks/useRoomToggle';
+import { MaterialSection } from '@/components/material-section';
+
+// ─── Типы ────────────────────────────────────────────────────────────────────
 
 interface ConstructionBlockProps {
   onNext: () => void;
   onBack: () => void;
 }
+
+// ─── Компонент ───────────────────────────────────────────────────────────────
 
 const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
   onNext,
@@ -65,310 +30,64 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
 }) => {
   const { constructionData, setConstructionData, premisesData } =
     useBriefStore();
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["walls", "ceiling", "floor"]),
+
+  const [expandedCategories, setExpandedCategories] = useState<
+    Set<ConstructionCategory>
+  >(new Set(["walls", "ceiling", "floor"]));
+
+  // Список комнат
+  const roomList = useMemo(
+    () =>
+      premisesData?.rooms?.map((room, index) => ({
+        id: `room-${index}`,
+        name: room.name,
+        order: room.order,
+      })) ?? [],
+    [premisesData],
   );
 
   const form = useForm<ConstructionFormValues>({
     resolver: zodResolver(ConstructionInfoSchema),
     mode: "onBlur",
-    defaultValues: constructionData || {
+    defaultValues: constructionData ?? {
       floor: [{ type: "", material: "", rooms: [] }],
       ceiling: [{ type: "", material: "", rooms: [] }],
       walls: [{ type: "", material: "", rooms: [] }],
     },
   });
 
-  const {
-    fields: floorFields,
-    append: appendFloor,
-    remove: removeFloor,
-  } = useFieldArray({
-    control: form.control,
-    name: "floor",
-  });
+  // Логика toggle комнат — в хуке
+  const { toggleRoom, toggleAllRooms } = useRoomToggle(form, roomList);
 
-  const {
-    fields: ceilingFields,
-    append: appendCeiling,
-    remove: removeCeiling,
-  } = useFieldArray({
-    control: form.control,
-    name: "ceiling",
-  });
-
-  const {
-    fields: wallsFields,
-    append: appendWalls,
-    remove: removeWalls,
-  } = useFieldArray({
-    control: form.control,
-    name: "walls",
-  });
-
-  // Get room list from premises data with unique IDs
-  const roomList = useMemo(() => {
-    if (premisesData && premisesData.rooms) {
-      return premisesData.rooms.map((room, index) => ({
-        id: `room-${index}`,
-        name: room.name,
-        order: room.order,
-      }));
-    }
-    return [];
-  }, [premisesData]);
-
-  const toggleCategory = (category: string) => {
+  const toggleCategory = useCallback((category: ConstructionCategory) => {
     setExpandedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      return newSet;
+      const next = new Set(prev);
+      next.has(category) ? next.delete(category) : next.add(category);
+      return next;
     });
-  };
+  }, []);
 
-  const toggleRoom = (
-    category: "floor" | "ceiling" | "walls",
-    sectionIndex: number,
-    roomId: string,
-  ) => {
-    const currentSections = form.getValues(category);
-    const section = currentSections[sectionIndex];
+  const onSubmit = useCallback(
+    (data: ConstructionFormValues) => {
+      try {
+        // Фильтруем незаполненные секции
+        const cleanedData: ConstructionFormValues = {
+          floor: data.floor?.filter((i) => i?.type && i.rooms?.length) ?? [],
+          ceiling:
+            data.ceiling?.filter((i) => i?.type && i.rooms?.length) ?? [],
+          walls: data.walls?.filter((i) => i?.type && i.rooms?.length) ?? [],
+        };
 
-    if (!section) return;
-
-    const currentRooms = section.rooms || [];
-
-    if (currentRooms.includes(roomId)) {
-      section.rooms = currentRooms.filter((r) => r !== roomId);
-    } else {
-      section.rooms = [...currentRooms, roomId];
-    }
-
-    form.setValue(category, currentSections, { shouldValidate: true });
-  };
-  const toggleAllRooms = (
-    category: "floor" | "ceiling" | "walls",
-    sectionIndex: number,
-  ) => {
-    const currentSections = form.getValues(category);
-    const section = currentSections[sectionIndex];
-
-    if (!section) return;
-
-    const allRoomIds = roomList.map((room) => room.id);
-    const currentSelected = section.rooms || [];
-
-    // Проверяем, выбраны ли уже абсолютно все помещения
-    const isAllSelected =
-      allRoomIds.length > 0 && currentSelected.length === allRoomIds.length;
-
-    if (isAllSelected) {
-      // Если уже выбраны все — очищаем массив (снимаем выбор)
-      section.rooms = [];
-    } else {
-      // Иначе — выбираем все доступные помещения
-      section.rooms = allRoomIds;
-    }
-
-    form.setValue(category, currentSections, { shouldValidate: true });
-  };
-  function onSubmit(data: ConstructionFormValues) {
-    try {
-      // Filter out empty sections
-      const cleanedData = {
-        floor:
-          data.floor?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0,
-          ) || [],
-        ceiling:
-          data.ceiling?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0,
-          ) || [],
-        walls:
-          data.walls?.filter(
-            (item) => item && item.type && item.rooms && item.rooms.length > 0,
-          ) || [],
-      };
-      setConstructionData(cleanedData);
-      toast.success("Информация по монтажу сохранена");
-      onNext();
-    } catch (error) {
-      console.error(error);
-      toast.error("Ошибка при попытке сохранения данных");
-    }
-  }
-
-  const getCategoryItemCount = (category: "floor" | "ceiling" | "walls") => {
-    const sections = form.watch(category);
-    return (
-      sections?.filter((s) => s && s.type && s.rooms && s.rooms.length > 0)
-        .length || 0
-    );
-  };
-
-  const renderMaterialSection = (
-    category: "floor" | "ceiling" | "walls",
-    title: string,
-    types: string[],
-    fields: any[],
-    append: any,
-    remove: any,
-  ) => {
-    const sections = form.watch(category);
-    const isExpanded = expandedCategories.has(category);
-    const itemCount = getCategoryItemCount(category);
-
-    return (
-      <FormBlock>
-        <div className="space-y-4">
-          {/* Category Header */}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => toggleCategory(category)}
-            className="flex items-center justify-between w-full text-left"
-          >
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg">{title}</span>
-              {itemCount > 0 && (
-                <span className="text-sm text-gray-500">({itemCount})</span>
-              )}
-            </div>
-            {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </Button>
-
-          {/* Category Content */}
-          {isExpanded && (
-            <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="space-y-4 pb-4 border-b last:border-b-0"
-                >
-                  <div className="flex gap-2 items-start">
-                    <FormField
-                      control={form.control}
-                      name={`${category}.${index}.type` as any}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value || ""}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Выберите тип" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {types.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {fields.length > 1 && (
-                      <RemoveIconButton onClick={() => remove(index)} />
-                    )}
-                  </div>
-
-                  {sections[index]?.type === "Другое" && (
-                    <FormField
-                      control={form.control}
-                      name={`${category}.${index}.material` as any}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              placeholder="Укажите материал"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Помещения:</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {(() => {
-                        const allRoomIds = roomList.map((r) => r.id);
-                        const selectedRooms = sections[index]?.rooms || [];
-                        const isAllSelected =
-                          allRoomIds.length > 0 &&
-                          selectedRooms.length === allRoomIds.length;
-
-                        return (
-                          <Button
-                            type="button"
-                            variant={isAllSelected ? "secondary" : "ghost"}
-                            size="default"
-                            onClick={() => toggleAllRooms(category, index)}
-                            className={`text-xs h-9 sm:h-7 px-3 transition-all ${
-                              isAllSelected ? "line-through opacity-60" : ""
-                            }`}
-                          >
-                            {isAllSelected ? "Все комнаты" : "Все комнаты"}
-                          </Button>
-                        );
-                      })()}
-
-                      {roomList.map((room) => {
-                        const isSelected =
-                          sections[index]?.rooms?.includes(room.id) || false;
-                        return (
-                          <Toggle
-                            key={room.id}
-                            type="button"
-                            size="default"
-                            onClick={() => toggleRoom(category, index, room.id)}
-                            className={`${
-                              isSelected
-                                ? "bg-black text-white hover:bg-black/80"
-                                : "bg-neutral-100 text-black border border-gray-300"
-                            }`}
-                          >
-                            <span className="opacity-60">{room.order}.</span>
-                            {room.name}
-                          </Toggle>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {form.formState.errors[category]?.[index]?.rooms && (
-                    <p className="text-sm text-red-500">
-                      Выберите хотя бы одно помещение
-                    </p>
-                  )}
-                </div>
-              ))}
-
-              <AddButton
-                onClick={() => append({ type: "", material: "", rooms: [] })}
-              >
-                Добавить материал
-              </AddButton>
-            </div>
-          )}
-        </div>
-      </FormBlock>
-    );
-  };
+        setConstructionData(cleanedData);
+        toast.success("Информация по монтажу сохранена");
+        onNext();
+      } catch (error) {
+        console.error("[ConstructionBlock] submit error:", error);
+        toast.error("Ошибка при сохранении данных");
+      }
+    },
+    [setConstructionData, onNext],
+  );
 
   return (
     <Form {...form}>
@@ -377,30 +96,23 @@ const ConstructionBlock: React.FC<ConstructionBlockProps> = ({
         className="flex h-full w-full flex-col"
       >
         <BriefBlockMain title="Информация по монтажу">
-          {renderMaterialSection(
-            "walls",
-            "Стены",
-            wallTypes,
-            wallsFields,
-            appendWalls,
-            removeWalls,
-          )}
-          {renderMaterialSection(
-            "ceiling",
-            "Потолок",
-            ceilingTypes,
-            ceilingFields,
-            appendCeiling,
-            removeCeiling,
-          )}
-          {renderMaterialSection(
-            "floor",
-            "Напольные покрытия",
-            floorTypes,
-            floorFields,
-            appendFloor,
-            removeFloor,
-          )}
+          {CONSTRUCTION_CATEGORIES.map(({ key, title, types }) => (
+            <MaterialSection
+              key={key}
+              category={key}
+              title={title}
+              types={types}
+              roomList={roomList}
+              isExpanded={expandedCategories.has(key)}
+              onToggleExpanded={() => toggleCategory(key)}
+              onToggleRoom={(sectionIndex, roomId) =>
+                toggleRoom(key, sectionIndex, roomId)
+              }
+              onToggleAllRooms={(sectionIndex) =>
+                toggleAllRooms(key, sectionIndex)
+              }
+            />
+          ))}
         </BriefBlockMain>
 
         <BottomButtonBlock onBack={onBack} />

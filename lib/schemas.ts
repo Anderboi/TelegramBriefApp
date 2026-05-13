@@ -71,7 +71,7 @@ export const EquipmentBlockSchema = z.object({
 });
 export type EquipmentBlockFormValues = z.infer<typeof EquipmentBlockSchema>;
 
-// Справочник оборудования по типам помещений
+//? Справочник оборудования по типам помещений
 export const equipmentTemplates = {
   kitchen: [
     { name: "Холодильник", category: "Бытовая техника" },
@@ -118,23 +118,23 @@ export const equipmentTemplates = {
   ],
 };
 
-// Тип для кэша
+//? Тип для кэша
 type EquipmentSuggestionsCache = Map<string, typeof equipmentTemplates[keyof typeof equipmentTemplates]>;
 
-// Интерфейс для расширения функции
+//? Интерфейс для расширения функции
 interface GetMemoizedEquipmentSuggestions {
   (roomName: string, roomType?: RoomType): typeof equipmentTemplates[keyof typeof equipmentTemplates];
   cache: EquipmentSuggestionsCache;
 }
 
-// Функция для получения предложений оборудования
+//? Функция для получения предложений оборудования
 export const getEquipmentSuggestions = (
   roomName: string,
   roomType?: RoomType
 ) => {
   const name = roomName.toLowerCase();
 
-  // Проверка по типу помещения (приоритет)
+  //? Проверка по типу помещения (приоритет)
   if (roomType === "wet") {
     // Различаем кухню и санузел по названию
     if (name.includes("кухн")) return equipmentTemplates.kitchen;
@@ -163,7 +163,7 @@ export const getEquipmentSuggestions = (
   return equipmentTemplates.default;
 };
 
-// Мемоизированная версия функции для получения предложений оборудования
+//? Мемоизированная версия функции для получения предложений оборудования
 export const getMemoizedEquipmentSuggestions: GetMemoizedEquipmentSuggestions = (
   roomName: string,
   roomType?: RoomType
@@ -332,4 +332,45 @@ export type SystemRecord = {
   system: string;
   type: SystemType;
   rooms: string[];
+};
+
+export const ENGINEERING_OPTIONS = {
+  heating: [
+    "Центральное отопление",
+    "Газовый котёл",
+    "Электрический котёл",
+    "Тепловой насос",
+    "Не требуется",
+  ],
+  warmFloor: [
+    "Водяной тёплый пол",
+    "Электрический тёплый пол",
+    "Инфракрасный тёплый пол",
+    "Не требуется",
+  ],
+  conditioning: [
+    "Центральная система",
+    "Сплит-системы",
+    "Мультисплит-система",
+    "VRF система",
+    "Приточная вентиляция",
+    "Приточно-вытяжная с рекуперацией",
+    "Не требуется",
+  ],
+  purification: [
+    "Фильтр грубой очистки",
+    "Система умягчения воды",
+    "Обратный осмос",
+    "Комплексная система очистки",
+    "Не требуется",
+  ],
+  electric: [
+    "Стандартная разводка",
+    "Умный дом (базовый)",
+    "Умный дом (расширенный)",
+    "Резервное питание (ИБП)",
+    "Резервное питание (генератор)",
+    "Стабилизатор напряжения",
+    "Система освещения DALI",
+  ],
 };

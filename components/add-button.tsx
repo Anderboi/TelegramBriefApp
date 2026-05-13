@@ -11,7 +11,7 @@ const AddButton = ({ children, onClick }: AddButtonProps) => {
     <Button
       type="button"
       variant="outline"
-      className="w-full border-dashed border-2 border-gray-300 hover:bg-gray-50 hover:text-gray-900"
+      className="w-full border-dashed border-2 border-gray-300 hover:bg-gray-50 hover:text-gray-900 cursor-pointer"
       onClick={onClick}
     >
       <Plus className="mr-2 size-4" /> {children}
