@@ -297,7 +297,7 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                             return (
                               <div
                                 key={eq.id}
-                                className="flex items-center //gap-2 //bg-zinc-100 border border-gray-200 //shadow-sm rounded-lg py-1.5"
+                                className="flex items-center gap-1 bg-zinc-100 //border border-gray-200 //shadow-lg rounded-lg py-1.5"
                               >
                                 <Input
                                   value={eq.name}
@@ -310,11 +310,13 @@ const EquipmentBlock: React.FC<EquipmentBlockProps> = ({ onNext, onBack }) => {
                                     )
                                   }
                                   placeholder="Название"
-                                  className="flex-1 h-8 border-none shadow-none focus-visible:ring-1 bg-transparent"
+                                  className="flex-1 //text-sm h-8 border-none shadow-none focus-visible:ring-1 bg-transparent"
                                 />
                                 <Input
                                   type="number"
                                   value={eq.quantity || 1}
+                                  inputMode="numeric"
+                                  onFocus={(e) => e.target.select()}
                                   onChange={(e) =>
                                     updateEquipment(
                                       room.id,

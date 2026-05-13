@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import { useBriefStore } from "@/lib/store/briefStore";
+import { MaskedPhoneInput } from '@/components/ui/phone-input';
 
 interface CommonInfoBlockProps {
   onNext: () => void;
@@ -31,8 +32,9 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
     defaultValues: commonData || {
       clientName: "",
       clientSurname: "",
+      clientPatronymic: "",
       email: "",
-      phone: "",
+      phone: "+7",
       address: "",
       area: 0,
       contractNumber: "",
@@ -59,11 +61,11 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
         <BriefBlockMain title="Общая информация">
           <FormBlock title="Клиент">
             <FormField
-              name="clientName"
+              name="clientSurname"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Имя</FormLabel>
+                  <FormLabel>Фамилия*</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -75,11 +77,28 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               )}
             />
             <FormField
-              name="clientSurname"
+              name="clientName"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Фамилия</FormLabel>
+                  <FormLabel>Имя*</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      onFocus={(e) => e.target.select()}
+                      type="text"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="clientPatronymic"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Отчество</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -95,7 +114,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Эл. почта</FormLabel>
+                  <FormLabel>Эл. почта*</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -112,14 +131,15 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Номер телефона</FormLabel>
+                  <FormLabel>Номер телефона*</FormLabel>
                   <FormControl>
-                    <Input
+                    <MaskedPhoneInput {...field}/>
+                    {/* <Input
                       {...field}
                       onFocus={(e) => e.target.select()}
                       type="tel"
                       inputMode="tel"
-                    />
+                    /> */}
                   </FormControl>
                 </FormItem>
               )}
@@ -131,7 +151,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Адрес</FormLabel>
+                  <FormLabel>Адрес*</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -148,7 +168,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
                 name="area"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Площадь</FormLabel>
+                    <FormLabel>Площадь*</FormLabel>
                     <FormControl>
                       <Input
                         {...field}

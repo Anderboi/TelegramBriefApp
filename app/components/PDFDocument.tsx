@@ -172,7 +172,8 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
               <View>
                 <Text style={styles.label}>ФИО</Text>
                 <Text style={styles.value}>
-                  {commonData.clientSurname} {commonData.clientName}
+                  {commonData.clientSurname} {commonData.clientName}{" "}
+                  {commonData.clientPatronymic || ""}
                 </Text>
               </View>
 

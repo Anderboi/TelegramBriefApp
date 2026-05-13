@@ -1,13 +1,15 @@
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from "zod";
 
 // ? Общие данные
 export const CommonDataSchema = z.object({
   clientName: z.string().min(1, "Напишите имя клиента"),
   clientSurname: z.string().min(1, "Напишите фамилию клиента"),
+  clientPatronymic: z.string().optional(),
   email: z
     .string()
     .email("Напишите email куда будет приходить информация по проекту"),
-  phone: z.string().optional(),
+  phone: z.string().refine((value)=> isValidPhoneNumber(value),{message: 'Напишите корректный номер телефона'}).optional(),
   address: z.string().min(1, "Введите адрес"),
   area: z.coerce.number().min(1, "Введите площадь"),
   contractNumber: z.string().optional(),
