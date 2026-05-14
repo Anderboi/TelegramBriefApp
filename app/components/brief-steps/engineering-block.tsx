@@ -14,13 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import {
   ENGINEERING_OPTIONS,
   EngineeringSystemsSchema,
   EngineeringSystemsType,
@@ -34,6 +27,7 @@ import {
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import AddButton from "@/components/add-button";
+import { ResponsivePanel } from '@/components/responsive-panel';
 
 interface EngineeringFormProps {
   onNext: () => void;
@@ -280,118 +274,92 @@ export default function EngineeringBlock({
             </Accordion>
           )}
 
-          {/* Drawer (Шторка) */}
-          <Drawer
+          <ResponsivePanel
+            title={
+              editing?.isNew ? "Добавление системы" : "Редактирование системы"
+            }
             open={!!editing}
+            onClose={saveDrawer}
             onOpenChange={(open) => !open && setEditing(null)}
           >
-            <DrawerContent className="max-h-[90vh]">
-              <div className="mx-auto w-full max-w-md">
-                <DrawerHeader>
-                  <DrawerTitle>
-                    {editing?.isNew
-                      ? "Добавление системы"
-                      : "Редактирование системы"}
-                  </DrawerTitle>
-                </DrawerHeader>
+            <div className="p-4 pb-0 space-y-6 overflow-y-auto">
+              {/* Название системы с подсказками */}
+              <div className="space-y-3">
+                <Label htmlFor="system-name">
+                  Название оборудования/системы
+                </Label>
+                <Input
+                  id="system-name"
+                  placeholder={currentCategoryObj?.placeholder}
+                  value={editing?.system || ""}
+                  onChange={(e) =>
+                    editing &&
+                    setEditing({ ...editing, system: e.target.value })
+                  }
+                  className="min-h-[44px]"
+                />
 
-                <div className="p-4 pb-0 space-y-6 overflow-y-auto">
-                  {/* Название системы с подсказками */}
-                  <div className="space-y-3">
-                    <Label htmlFor="system-name">
-                      Название оборудования/системы
-                    </Label>
-                    <Input
-                      id="system-name"
-                      placeholder={currentCategoryObj?.placeholder}
-                      value={editing?.system || ""}
-                      onChange={(e) =>
-                        editing &&
-                        setEditing({ ...editing, system: e.target.value })
-                      }
-                      className="min-h-[44px]"
-                    />
-
-                    {/* Быстрые шаблоны из ENGINEERING_OPTIONS */}
-                    {currentTemplates.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {currentTemplates.map((template) => (
-                          <Button
-                            key={template}
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="text-xs h-7 rounded-full"
-                            onClick={() =>
-                              editing &&
-                              setEditing({ ...editing, system: template })
-                            }
-                          >
-                            {template}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Выбор помещений */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label>Привязка к помещениям</Label>
+                {/* Быстрые шаблоны из ENGINEERING_OPTIONS */}
+                {currentTemplates.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {currentTemplates.map((template) => (
                       <Button
+                        key={template}
                         type="button"
-                        variant={isAllSelected ? "secondary" : "ghost"}
+                        variant="secondary"
                         size="sm"
-                        onClick={toggleAllRooms}
-                        disabled={availableRooms.length === 0}
-                        className={cn(
-                          "h-8 text-xs px-2",
-                          isAllSelected && "opacity-70",
-                        )}
+                        className="text-xs h-7 rounded-full"
+                        onClick={() =>
+                          editing &&
+                          setEditing({ ...editing, system: template })
+                        }
                       >
-                        {isAllSelected ? "Снять все" : "Выбрать все"}
+                        {template}
                       </Button>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {availableRooms.map((room) => {
-                        const isSelected = editing?.rooms.includes(room.name);
-                        return (
-                          <Button
-                            key={room.name}
-                            type="button"
-                            variant={isSelected ? "default" : "outline"}
-                            className="rounded-xl min-h-[36px] px-3 transition-colors text-sm"
-                            onClick={() => toggleRoom(room.name)}
-                          >
-                            {room.name}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                    ))}
                   </div>
-                </div>
+                )}
+              </div>
 
-                <DrawerFooter className="pt-6 pb-8">
-                  <Button
-                    onClick={saveDrawer}
-                    disabled={!editing?.system.trim()}
-                    className="min-h-[44px]"
-                  >
-                    Сохранить
-                  </Button>
+              {/* Выбор помещений */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Привязка к помещениям</Label>
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={() => setEditing(null)}
-                    className="min-h-[44px]"
+                    variant={isAllSelected ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={toggleAllRooms}
+                    disabled={availableRooms.length === 0}
+                    className={cn(
+                      "h-8 text-xs px-2",
+                      isAllSelected && "opacity-70",
+                    )}
                   >
-                    Отмена
+                    {isAllSelected ? "Снять все" : "Выбрать все"}
                   </Button>
-                </DrawerFooter>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {availableRooms.map((room) => {
+                    const isSelected = editing?.rooms.includes(room.name);
+                    return (
+                      <Button
+                        key={room.name}
+                        type="button"
+                        variant={isSelected ? "default" : "outline"}
+                        className="rounded-xl min-h-[36px] px-3 transition-colors text-sm"
+                        onClick={() => toggleRoom(room.name)}
+                      >
+                        {room.name}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
-            </DrawerContent>
-          </Drawer>
+            </div>
+          </ResponsivePanel>
+          
         </BriefBlockMain>
         <BottomButtonBlock onBack={onBack} />
       </form>
