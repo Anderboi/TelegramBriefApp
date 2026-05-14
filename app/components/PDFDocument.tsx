@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "#666",
     marginBottom: 2,
+    paddingTop: 8,
   },
   value: {
     fontSize: 12,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   table: {
-    marginTop: 4,
+    marginTop: 2,
   },
   tableRow: {
     flexDirection: "row",
@@ -103,6 +104,12 @@ const styles = StyleSheet.create({
   },
   listItem: {
     fontSize: 9,
+    marginBottom: 3,
+    paddingLeft: 10,
+  },
+  listTitleItem: {
+    fontSize: 11,
+    fontWeight: "semibold",
     marginBottom: 3,
     paddingLeft: 10,
   },
@@ -134,6 +141,68 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
       .filter((room) => room.order)
       .map((room) => room.name)
       .join(", ");
+  };
+
+  const renderEngineeringCategory = (
+    title: string,
+    items: any[] | undefined,
+  ) => {
+    // Если массив пустой, мы все равно показываем категорию, но пишем "Не требуется" (хороший тон для ТЗ)
+    if (!items || items.length === 0) {
+      return (
+        <View style={{ marginBottom: 10 }}>
+          <Text
+            style={{
+              fontFamily: "Roboto",
+              fontWeight: "bold",
+              fontSize: 11,
+              marginBottom: 4,
+              color: "#334155",
+            }}
+          >
+            {title}
+          </Text>
+          <Text style={{ fontSize: 10, color: "#94a3b8" }}>
+            Не требуется / Не указано
+          </Text>
+        </View>
+      );
+    }
+    return (
+      <View style={{ marginBottom: 10 }}>
+        <Text
+          style={{
+            fontFamily: "Roboto",
+            fontWeight: "bold",
+            fontSize: 11,
+            marginBottom: 4,
+            color: "#334155",
+          }}
+        >
+          {title}
+        </Text>
+        {items.map((item, idx) => (
+          <View
+            key={idx}
+            style={{
+              flexDirection: "row",
+              borderBottom: "0.5 solid #e2e8f0",
+              paddingBottom: 4,
+              marginBottom: 4,
+            }}
+          >
+            <Text style={{ width: "45%", fontSize: 10, color: "#0f172a" }}>
+              • {item.system}
+            </Text>
+            <Text style={{ width: "55%", fontSize: 10, color: "#64748b" }}>
+              {item.rooms && item.rooms.length > 0
+                ? item.rooms.join(", ")
+                : "Все помещения"}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
   };
 
   return (
@@ -240,7 +309,9 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                     Кол-во единовременно проживающих
                   </Text>
                   <Text style={styles.value}>
-                    {residentsData.adults.length} человека
+                    {residentsData.adults.length +
+                      residentsData.children.length}{" "}
+                    человека
                   </Text>
                 </View>
 
@@ -429,8 +500,8 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                         {constructionData.walls.map((wall, index) => (
                           <div key={index}>
                             <Text style={styles.listItem}>
-                              • {wall?.type || "—"}
-                              {wall?.material && ` (${wall.material})`}
+                              •{/* {wall?.type || "—"} */}
+                              {wall?.material && ` ${wall.material}`}
                             </Text>
                             <Text style={styles.listItem}>
                               {wall?.rooms &&
@@ -448,8 +519,8 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                         {constructionData.ceiling.map((ceiling, index) => (
                           <div key={index}>
                             <Text key={index} style={styles.listItem}>
-                              • {ceiling?.type || "—"}
-                              {ceiling?.material && ` (${ceiling.material})`}
+                              •{/* {ceiling?.type || "—"} */}
+                              {ceiling?.material && ` ${ceiling.material}`}
                             </Text>
                             <Text style={styles.listItem}>
                               {ceiling?.rooms &&
@@ -467,8 +538,8 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                         {constructionData.floor.map((floor, index) => (
                           <div key={index}>
                             <Text key={index} style={styles.listItem}>
-                              • {floor?.type || "—"}
-                              {floor?.material && ` (${floor.material})`}
+                              •{/* {floor?.type || "—"} */}
+                              {floor?.material && ` ${floor.material}`}
                             </Text>
                             <Text style={styles.listItem}>
                               {floor?.rooms &&
@@ -584,6 +655,58 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                   )}
                 </View>
               ))}
+            </View>
+          </View>
+
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: 8,
+              bottom: 30,
+              left: 40,
+              right: 40,
+              textAlign: "center",
+              color: "grey",
+              borderTop: "0.5 solid #ddd",
+              paddingTop: 10,
+            }}
+            render={({ pageNumber, totalPages }) =>
+              `Техническое задание — ${commonData.clientSurname || "Клиент"} — Страница ${pageNumber} из ${totalPages}`
+            }
+            fixed
+          />
+        </Page>
+      )}
+      {engineeringData && (
+        <Page size="A4" style={styles.page}>
+          <View style={styles.section} wrap={false}>
+            <View>
+              <Text style={styles.sectionTitle}>
+                Раздел 7. Инженерные системы
+              </Text>
+            </View>
+
+            <View style={{ paddingLeft: 10 }}>
+              {renderEngineeringCategory(
+                "Системы отопления",
+                engineeringData.heatingSystem,
+              )}
+              {renderEngineeringCategory(
+                "Теплые полы",
+                engineeringData.warmFloorRooms,
+              )}
+              {renderEngineeringCategory(
+                "Кондиционирование и вентиляция",
+                engineeringData.conditioningSystem,
+              )}
+              {renderEngineeringCategory(
+                "Водоочистка и водоснабжение",
+                engineeringData.purificationSystem,
+              )}
+              {renderEngineeringCategory(
+                "Электрооборудование и Умный дом",
+                engineeringData.electricSystem,
+              )}
             </View>
           </View>
 
