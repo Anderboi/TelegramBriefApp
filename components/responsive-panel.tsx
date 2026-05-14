@@ -23,6 +23,7 @@ interface ResponsivePanelProps {
   onOpenChange: (open: boolean) => void;
   onClose: () => void;
   title: string;
+  isSaveDisabled?: boolean;
 }
 export function ResponsivePanel({
   children,
@@ -30,6 +31,7 @@ export function ResponsivePanel({
   open,
   onOpenChange,
   title,
+  isSaveDisabled
 }: ResponsivePanelProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -62,7 +64,11 @@ export function ResponsivePanel({
         {children}
         <DrawerFooter>
           <DrawerClose asChild>
-            <Button className="w-full mb-20" onClick={onClose}>
+            <Button
+              className="w-full mb-20"
+              onClick={onClose}
+              disabled={isSaveDisabled}
+            >
               Сохранить и закрыть
             </Button>
           </DrawerClose>
