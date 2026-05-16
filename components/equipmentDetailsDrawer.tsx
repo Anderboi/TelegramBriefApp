@@ -2,18 +2,8 @@
 
 import { memo } from "react";
 import { Equipment } from "@/lib/schemas";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ResponsivePanel } from "./responsive-panel";
 
@@ -46,7 +36,6 @@ export const EquipmentDetailsDrawer = memo(function EquipmentDetailsDrawer({
               placeholder="Например: IKEA, Bork, Samsung"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="url">Ссылка на товар</Label>
             <Input
@@ -57,7 +46,6 @@ export const EquipmentDetailsDrawer = memo(function EquipmentDetailsDrawer({
               type="url"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="description">Комментарий</Label>
             <Textarea
@@ -71,7 +59,6 @@ export const EquipmentDetailsDrawer = memo(function EquipmentDetailsDrawer({
         </div>
       )}
     </ResponsivePanel>
-    
   );
 });
 
