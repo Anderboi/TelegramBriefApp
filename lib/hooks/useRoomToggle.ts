@@ -1,11 +1,17 @@
 import { useCallback } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { ConstructionFormValues } from "@/lib/schemas";
-import { ConstructionCategory } from '../constants';
+import { ConstructionCategory } from "../constants";
 
 interface Room {
   id: string;
 }
+
+type SectionItem = {
+  type: string;
+  material: string;
+  rooms: string[];
+};
 
 export function useRoomToggle(
   form: UseFormReturn<ConstructionFormValues>,
@@ -14,7 +20,7 @@ export function useRoomToggle(
   // Фикс: используем update из useFieldArray вместо прямой мутации
   const toggleRoom = useCallback(
     (category: ConstructionCategory, sectionIndex: number, roomId: string) => {
-      const currentSections = form.getValues(category);
+      const currentSections = (form.getValues(category) || []) as SectionItem[];
       const section = currentSections[sectionIndex];
       if (!section) return;
 
@@ -46,11 +52,20 @@ export function useRoomToggle(
 
       const nextSections = currentSections.map((s, i) =>
         i === sectionIndex
-          ? { ...s, rooms: isAllSelected ? [] : allRoomIds }
+          ? {
+              ...s,
+              type: s?.type || "",
+              material: s?.material || "",
+              rooms: isAllSelected ? [] : allRoomIds,
+            }
           : s,
       );
 
-      form.setValue(category, nextSections, { shouldValidate: true });
+      form.setValue(
+        category,
+        nextSections as ConstructionFormValues[typeof category],
+        { shouldValidate: true },
+      );
     },
     [form, roomList],
   );
