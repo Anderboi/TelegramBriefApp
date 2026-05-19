@@ -307,7 +307,7 @@ const Field = ({
   value?: string | null;
   style?: object;
 }) => (
-  <View style={style ? {...S.field, ...style}:S.field}>
+  <View style={style ? { ...S.field, ...style } : S.field}>
     <Text style={S.fieldLabel}>{label.toUpperCase()}</Text>
     {value ? (
       <Text style={S.fieldValue}>{value}</Text>
@@ -663,10 +663,17 @@ const BriefPDFDocument: React.FC<BriefPDFDocumentProps> = ({
                     value={demolitionData.furnitureToDemolish || "Предусмотрен"}
                   />
                 )}
+                {demolitionData.isOther && (
+                  <Field
+                    label="Другие демонтажные работы"
+                    value={demolitionData.other || "Предусмотрены"}
+                  />
+                )}
                 {!demolitionData.planChange &&
                   !demolitionData.entranceDoorChange &&
                   !demolitionData.windowsChange &&
-                  !demolitionData.furnitureDemolition && (
+                  !demolitionData.furnitureDemolition &&
+                  !demolitionData.isOther && (
                     <Text style={S.emptyValue}>
                       Демонтажные работы не предусмотрены
                     </Text>

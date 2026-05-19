@@ -268,6 +268,8 @@ export const DemolitionSchema = z.object({
   windowsType: z.string().optional(),
   furnitureDemolition: z.boolean().optional(),
   furnitureToDemolish: z.string().optional(),
+  isOther: z.boolean().optional(),
+  other: z.string().optional(),
 });
 export type DemolitionType = z.infer<typeof DemolitionSchema>;
 

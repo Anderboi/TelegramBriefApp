@@ -41,6 +41,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
       entranceDoorChange: false,
       furnitureDemolition: false,
       windowsChange: false,
+      isOther: false,
     },
   });
 
@@ -101,7 +102,6 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
               />
             </AnimatedArea>
           </FormBlock>
-
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -128,8 +128,7 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                   <FormItem className="sm:col-span-2">
                     <FormControl>
                       <Textarea
-                        placeholder="Предпочтительный тип входной двери. Более подробное
-                    описание."
+                        placeholder="Предпочтительный тип входной двери. Более подробное описание."
                         {...field}
                       />
                     </FormControl>
@@ -143,7 +142,6 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
               />
             </AnimatedArea>
           </FormBlock>
-
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -182,7 +180,6 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
               />
             </AnimatedArea>
           </FormBlock>
-
           <FormBlock title="">
             <FormField
               control={form.control}
@@ -209,6 +206,45 @@ const DemolitionBlock: React.FC<DemolitionBlockProps> = ({
                     <FormControl>
                       <Textarea
                         placeholder="Описание демонтируемой мебели."
+                        {...field}
+                      />
+                    </FormControl>
+                    {/* <FormDescription>
+                    Описание демонтируемой мебели.
+                  </FormDescription> */}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </AnimatedArea>
+          </FormBlock>
+          {/* //? Other */}
+          <FormBlock title="">
+            <FormField
+              control={form.control}
+              name="isOther"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <FormLabel>Другие демонтируемые элементы</FormLabel>
+                  <FormControl>
+                    <Switch
+                      className="!m-0"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <AnimatedArea formWatch={form.watch("isOther")}>
+              <FormField
+                control={form.control}
+                name="other"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormControl>
+                      <Textarea
+                        placeholder="Описание демонтируемых элементов."
                         {...field}
                       />
                     </FormControl>
