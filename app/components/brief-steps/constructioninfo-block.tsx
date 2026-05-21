@@ -249,7 +249,7 @@ export default function ConstructionInfoBlock({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="size-8 text-destructive"
+                              className="size-8 text-muted-foreground hover:text-destructive"
                               onClick={() => handleDelete(section.key, idx)}
                             >
                               <Trash2 className="size-4" />

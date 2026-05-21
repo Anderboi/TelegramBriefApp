@@ -244,19 +244,19 @@ export default function EngineeringBlock({
                                   type="button"
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                  className="size-8 text-muted-foreground hover:text-primary"
                                   onClick={() => handleEdit(cat.key, item)}
                                 >
-                                  <Settings2 className="h-4 w-4" />
+                                  <Settings2 className="size-4" />
                                 </Button>
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                  className="size-8 text-muted-foreground hover:text-destructive"
                                   onClick={() => handleDelete(cat.key, item.id)}
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="size-4" />
                                 </Button>
                               </div>
                             </div>
@@ -302,21 +302,39 @@ export default function EngineeringBlock({
                 {/* Быстрые шаблоны из ENGINEERING_OPTIONS */}
                 {currentTemplates.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 pt-1">
-                    {currentTemplates.map((template) => (
-                      <Button
-                        key={template}
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="text-xs h-7 rounded-full"
-                        onClick={() =>
-                          editing &&
-                          setEditing({ ...editing, system: template })
+                    {(() => {
+                      const currentSystem = editing?.system?.trim() || "";
+
+                      return currentTemplates.map((template) => {
+                        const isSelected = currentSystem === template;
+
+                        // Если в поле ввода есть текст (шаблон или кастомный),
+                        // прячем все бэджи, кроме того, что точно совпадает
+                        if (currentSystem !== "" && !isSelected) {
+                          return null;
                         }
-                      >
-                        {template}
-                      </Button>
-                    ))}
+
+                        return (
+                          <Button
+                            key={template}
+                            type="button"
+                            variant={isSelected ? "default" : "secondary"}
+                            size="sm"
+                            className="text-xs h-7 rounded-full transition-all"
+                            onClick={() =>
+                              editing &&
+                              setEditing({
+                                ...editing,
+                                // Сбрасываем выбор при повторном клике (toggle)
+                                system: isSelected ? "" : template,
+                              })
+                            }
+                          >
+                            {template}
+                          </Button>
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </div>
@@ -359,7 +377,6 @@ export default function EngineeringBlock({
               </div>
             </div>
           </ResponsivePanel>
-          
         </BriefBlockMain>
         <BottomButtonBlock onBack={onBack} />
       </form>
