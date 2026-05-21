@@ -240,19 +240,19 @@ export default function ConstructionInfoBlock({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className="size-8"
                               onClick={() => handleEdit(section.key, idx, item)}
                             >
-                              <Settings2 className="h-4 w-4" />
+                              <Settings2 className="size-4" />
                             </Button>
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 text-destructive"
+                              className="size-8 text-destructive"
                               onClick={() => handleDelete(section.key, idx)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="size-4" />
                             </Button>
                           </div>
                         </div>
@@ -287,22 +287,37 @@ export default function ConstructionInfoBlock({
                     className="min-h-[44px]"
                   />
                   <div className="flex flex-wrap gap-1.5 pt-1">
-                    {SECTIONS.find(
-                      (s) => s.key === editing?.category,
-                    )?.templates.map((t) => (
-                      <Button
-                        key={t}
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="text-xs h-7 rounded-full"
-                        onClick={() =>
-                          editing && setEditing({ ...editing, material: t })
+                    {(() => {
+                      const templates =
+                        SECTIONS.find((s) => s.key === editing?.category)
+                          ?.templates || [];
+                      const currentMaterial = editing?.material?.trim() || "";
+
+                      return templates.map((t) => {
+                        const isSelected = currentMaterial === t;
+                        if (currentMaterial !== "" && !isSelected) {
+                          return null;
                         }
-                      >
-                        {t}
-                      </Button>
-                    ))}
+                        return (
+                          <Button
+                            key={t}
+                            type="button"
+                            variant={isSelected ? "default" : "secondary"}
+                            size="sm"
+                            className="text-xs h-7 rounded-full transition-all"
+                            onClick={() =>
+                              editing &&
+                              setEditing({
+                                ...editing,
+                                material: isSelected ? "" : t,
+                              })
+                            }
+                          >
+                            {t}
+                          </Button>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
 
@@ -343,11 +358,9 @@ export default function ConstructionInfoBlock({
                     ))}
                   </div>
                 </div>
-               
               </div>
             )}
           </ResponsivePanel>
-          
         </BriefBlockMain>
         <BottomButtonBlock onBack={onBack} />
       </form>
