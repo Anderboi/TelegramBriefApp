@@ -13,13 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerFooter,
-} from "@/components/ui/drawer";
 import { ConstructionInfoSchema, ConstructionFormValues } from "@/lib/schemas";
 import {
   Accordion,
@@ -49,21 +42,26 @@ const SECTIONS: {
     label: "Полы",
     templates: [
       "Керамогранит",
+      "Натуральный камень",
       "Паркетная доска",
+      "Инженерная доска",
       "Ламинат",
       "Кварцвинил",
       "Микроцемент",
+      "Ковролин",
+      "Наливной пол",
     ],
   },
   {
     key: "ceiling",
     label: "Потолки",
     templates: [
-      "ГКЛ (Гипсокартон)",
+      "Гипсокартонный",
       "Натяжной",
       "Под покраску",
       "Реечный",
       "Бетон (Лофт)",
+      "Подвесной",
     ],
   },
   {
@@ -74,7 +72,7 @@ const SECTIONS: {
       "Обои",
       "Декоративная штукатурка",
       "Панели",
-      "Кирпич",
+      "Микроцемент",
     ],
   },
 ];
