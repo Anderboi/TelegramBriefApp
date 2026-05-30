@@ -273,7 +273,7 @@ export default function EquipmentBlock({
                   <AccordionItem
                     value={roomField.id}
                     key={roomField.id}
-                    className="rounded-2xl px-4 shadow-sm border bg-card"
+                    className="rounded-3xl px-4 bg-card"
                   >
                     <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center justify-between w-full pr-4">

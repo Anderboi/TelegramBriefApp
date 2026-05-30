@@ -100,7 +100,38 @@ export default function ConstructionInfoBlock({
     mode: "onChange",
   });
 
-  const [editing, setEditing] = useState<EditingState | null>(null);
+  type PanelState =
+    | { mode: "edit"; data: EditingState }
+    | { mode: "guide"; category: ConstructionCategory }
+    | null;
+
+  const [panelState, setPanelState] = useState<PanelState>(null);
+
+  // Оставляем переменную editing, чтобы старая логика формы работала без изменений!
+  const editing = panelState?.mode === "edit" ? panelState.data : null;
+
+  // Переопределяем setEditing, чтобы старые обработчики (handleEdit, toggleRoom) работали
+  const setEditing = (data: EditingState | null) => {
+    if (data) {
+      setPanelState({ mode: "edit", data });
+    } else {
+      setPanelState(null);
+    }
+  };
+
+  // Функция открытия справочника с защитой от потери введенных данных
+  const handleOpenGuide = (category: ConstructionCategory) => {
+    if (
+      editing &&
+      (editing.material.trim() !== "" || editing.rooms.length > 0)
+    ) {
+      const confirm = window.confirm(
+        "У вас есть несохраненные данные. Если вы откроете справочник, они будут удалены. Продолжить?",
+      );
+      if (!confirm) return;
+    }
+    setPanelState({ mode: "guide", category });
+  };
 
   const handleAddNew = (category: ConstructionCategory) => {
     setEditing({
@@ -198,14 +229,14 @@ export default function ConstructionInfoBlock({
               </p>
             </div>
           ) : (
-            <Accordion type="multiple" className="w-full space-y-3">
+            <Accordion type="multiple" className="w-full space-y-2">
               {SECTIONS.map((section) => {
                 const items = form.watch(section.key) || [];
                 return (
                   <AccordionItem
                     value={section.key}
                     key={section.key}
-                    className="rounded-2xl px-4 shadow-sm border bg-card"
+                    className="rounded-3xl px-4 bg-card"
                   >
                     <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center justify-between w-full pr-4">
@@ -257,9 +288,23 @@ export default function ConstructionInfoBlock({
                           </div>
                         </div>
                       ))}
+
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleOpenGuide(section.key)}
+                        className="//rounded-xl border border-dashed bg-secondary/50 text-sm h-auto w-full"
+                      >
+                        📖 Помощь в выборе
+                      </Button>
+
                       <AddButton onClick={() => handleAddNew(section.key)}>
                         Добавить отделку
                       </AddButton>
+
+                      {/* <AddButton onClick={() => handleAddNew(section.key)}>
+                        Добавить отделку
+                      </AddButton> */}
                     </AccordionContent>
                   </AccordionItem>
                 );
@@ -267,12 +312,25 @@ export default function ConstructionInfoBlock({
             </Accordion>
           )}
           <ResponsivePanel
-            open={!!editing}
-            onOpenChange={(open) => !open && setEditing(null)}
-            onClose={saveDrawer}
-            title={editing?.isNew ? "Новая отделка" : "Редактирование отделки"}
+            open={!!panelState}
+            onOpenChange={(open) => !open && setPanelState(null)}
+            onClose={() =>
+              panelState?.mode === "edit" ? saveDrawer() : setPanelState(null)
+            }
+            title={
+              panelState?.mode === "guide"
+                ? "Справочник материалов"
+                : editing?.isNew
+                  ? "Новая отделка"
+                  : "Редактирование отделки"
+            }
           >
-            {editing && (
+            {panelState?.mode === "guide" && (
+              <div className="p-10 text-center text-muted-foreground text-sm">
+                Компонент справочника подгружается...
+              </div>
+            )}
+            {panelState?.mode === "edit" && editing && (
               <div className="p-4 space-y-6 overflow-y-auto">
                 {/* Поле материала и шаблоны */}
                 <div className="space-y-3">

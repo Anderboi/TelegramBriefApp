@@ -246,7 +246,7 @@ const ResidentsBlock: React.FC<ResidentsBlockProps> = ({ onNext, onBack }) => {
           </FormBlock>
 
           {/* Домашние животные */}
-          <section className="space-y-4">
+          <section className="space-y-4 pb-6">
             <FormField
               control={control}
               name="hasPets"

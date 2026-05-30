@@ -1,5 +1,3 @@
-import React from "react";
-
 const AnimatedArea = ({ children, formWatch }: any) => {
   return (
     <div
