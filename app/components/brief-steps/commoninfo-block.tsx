@@ -205,7 +205,7 @@ const CommonInfoBlock: React.FC<CommonInfoBlockProps> = ({ onNext }) => {
               control={form.control}
               name="startDate"
               render={({ field }) => (
-                <FormItem className="//w-full">
+                <FormItem className="w-full">
                   <FormLabel>Дата начала проекта</FormLabel>
                   <FormControl>
                     <Input
