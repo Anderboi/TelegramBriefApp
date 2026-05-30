@@ -8,10 +8,16 @@ function FormBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="p-4 space-y-4 rounded-2xl shadow-xl bg-background dark:border dark:shadow-none">
-      {title && <h3 className="font-bold text-lg">{title}</h3>}
-      <article className="space-y-4">{children}</article>
-    </section>
+    <>
+      {title && (
+        <h3 className="font-bold px-2 py-1 //text-lg text-secondary-foreground">
+          {title}
+        </h3>
+      )}
+      <section className="p-4 space-y-4 rounded-3xl //shadow-xl bg-background dark:border dark:shadow-none">
+        {children}
+      </section>
+    </>
   );
 }
 
