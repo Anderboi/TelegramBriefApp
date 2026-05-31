@@ -24,6 +24,7 @@ import BriefBlockMain from "@/components/ui/brief-block-main";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import AddButton from "@/components/add-button";
 import { ResponsivePanel } from "@/components/responsive-panel";
+import GuideContent from "@/components/guide-content";
 
 interface ConstructionFormProps {
   onNext: () => void;
@@ -208,7 +209,24 @@ export default function ConstructionInfoBlock({
       rooms: isAllSelected ? [] : availableRooms.map((r) => r.name),
     });
   };
-  // --------------------------------------
+
+  const handleGuideSelect = (materialTitle: string) => {
+    // Если мы в справочнике, берем текущую категорию
+    if (panelState?.mode !== "guide") return;
+
+    // Переключаем панель в режим добавления с уже вписанным материалом!
+    setPanelState({
+      mode: "edit",
+      data: {
+        category: panelState.category,
+        index: -1,
+        type: "",
+        material: materialTitle,
+        rooms: [], // Комнаты он докликает сам
+        isNew: true,
+      },
+    });
+  };
 
   const onSubmit = (data: ConstructionFormValues) => {
     setConstructionData(data);
@@ -326,9 +344,10 @@ export default function ConstructionInfoBlock({
             }
           >
             {panelState?.mode === "guide" && (
-              <div className="p-10 text-center text-muted-foreground text-sm">
-                Компонент справочника подгружается...
-              </div>
+              <GuideContent
+                category={panelState.category}
+                onSelect={handleGuideSelect}
+              />
             )}
             {panelState?.mode === "edit" && editing && (
               <div className="p-4 space-y-6 overflow-y-auto">
