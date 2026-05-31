@@ -27,7 +27,8 @@ import {
 import BriefBlockMain from "@/components/ui/brief-block-main";
 import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import AddButton from "@/components/add-button";
-import { ResponsivePanel } from '@/components/responsive-panel';
+import { ResponsivePanel } from "@/components/responsive-panel";
+import GuideContent from "@/components/guide-content";
 
 interface EngineeringFormProps {
   onNext: () => void;
@@ -96,7 +97,45 @@ export default function EngineeringBlock({
     mode: "onChange",
   });
 
-  const [editing, setEditing] = useState<EditingState | null>(null);
+  type PanelState =
+    | { mode: "edit"; data: EditingState }
+    | { mode: "guide"; category: CategoryKey }
+    | null;
+
+  const [panelState, setPanelState] = useState<PanelState>(null);
+  const editing = panelState?.mode === "edit" ? panelState.data : null;
+
+  const setEditing = (data: EditingState | null) => {
+    if (data) {
+      setPanelState({ mode: "edit", data });
+    } else {
+      setPanelState(null);
+    }
+  };
+
+  const handleOpenGuide = (category: CategoryKey) => {
+    if (editing && (editing.system.trim() !== "" || editing.rooms.length > 0)) {
+      const confirm = window.confirm(
+        "У вас есть несохраненные данные. Если вы откроете справочник, они будут удалены. Продолжить?",
+      );
+      if (!confirm) return;
+    }
+    setPanelState({ mode: "guide", category });
+  };
+
+  const handleGuideSelect = (systemTitle: string) => {
+    if (panelState?.mode !== "guide") return;
+    setPanelState({
+      mode: "edit",
+      data: {
+        category: panelState.category,
+        id: Date.now(),
+        system: systemTitle,
+        rooms: [],
+        isNew: true,
+      },
+    });
+  };
 
   const handleAddNew = (category: CategoryKey) => {
     setEditing({
@@ -263,6 +302,14 @@ export default function EngineeringBlock({
                           ))}
                         </div>
                       )}
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleOpenGuide(cat.key)}
+                        className="border border-dashed bg-secondary/50 text-sm h-auto w-full cursor-pointer"
+                      >
+                        📖 Помощь в выборе
+                      </Button>
 
                       <AddButton onClick={() => handleAddNew(cat.key)}>
                         Добавить систему
@@ -276,106 +323,120 @@ export default function EngineeringBlock({
 
           <ResponsivePanel
             title={
-              editing?.isNew ? "Добавление системы" : "Редактирование системы"
+              panelState?.mode === "guide"
+                ? "Справочник систем"
+                : editing?.isNew
+                  ? "Добавление системы"
+                  : "Редактирование системы"
             }
-            open={!!editing}
-            onClose={saveDrawer}
-            onOpenChange={(open) => !open && setEditing(null)}
+            open={!!panelState}
+            onClose={() =>
+              panelState?.mode === "edit" ? saveDrawer() : setPanelState(null)
+            }
+            onOpenChange={(open) => !open && setPanelState(null)}
           >
-            <div className="p-4 pb-0 space-y-6 overflow-y-auto">
-              {/* Название системы с подсказками */}
-              <div className="space-y-3">
-                <Label htmlFor="system-name">
-                  Название оборудования/системы
-                </Label>
-                <Input
-                  id="system-name"
-                  placeholder={currentCategoryObj?.placeholder}
-                  value={editing?.system || ""}
-                  onChange={(e) =>
-                    editing &&
-                    setEditing({ ...editing, system: e.target.value })
-                  }
-                  className="min-h-[44px]"
-                />
+            {panelState?.mode === "guide" && (
+              <GuideContent
+                category={panelState.category}
+                onSelect={handleGuideSelect}
+              />
+            )}
+            {panelState?.mode === "edit" && editing && (
+              <div className="p-4 pb-0 space-y-6 overflow-y-auto">
+                {/* Название системы с подсказками */}
+                <div className="space-y-3">
+                  <Label htmlFor="system-name">
+                    Название оборудования/системы
+                  </Label>
+                  <Input
+                    id="system-name"
+                    placeholder={currentCategoryObj?.placeholder}
+                    value={editing?.system || ""}
+                    onChange={(e) =>
+                      editing &&
+                      setEditing({ ...editing, system: e.target.value })
+                    }
+                    className="min-h-[44px]"
+                  />
 
-                {/* Быстрые шаблоны из ENGINEERING_OPTIONS */}
-                {currentTemplates.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {(() => {
-                      const currentSystem = editing?.system?.trim() || "";
+                  {/* Быстрые шаблоны из ENGINEERING_OPTIONS */}
+                  {currentTemplates.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {(() => {
+                        const currentSystem = editing?.system?.trim() || "";
 
-                      return currentTemplates.map((template) => {
-                        const isSelected = currentSystem === template;
+                        return currentTemplates.map((template) => {
+                          const isSelected = currentSystem === template;
 
-                        // Если в поле ввода есть текст (шаблон или кастомный),
-                        // прячем все бэджи, кроме того, что точно совпадает
-                        if (currentSystem !== "" && !isSelected) {
-                          return null;
-                        }
+                          // Если в поле ввода есть текст (шаблон или кастомный),
+                          // прячем все бэджи, кроме того, что точно совпадает
+                          if (currentSystem !== "" && !isSelected) {
+                            return null;
+                          }
 
-                        return (
-                          <Button
-                            key={template}
-                            type="button"
-                            variant={isSelected ? "default" : "secondary"}
-                            size="sm"
-                            className="text-xs h-7 rounded-full transition-all"
-                            onClick={() =>
-                              editing &&
-                              setEditing({
-                                ...editing,
-                                // Сбрасываем выбор при повторном клике (toggle)
-                                system: isSelected ? "" : template,
-                              })
-                            }
-                          >
-                            {template}
-                          </Button>
-                        );
-                      });
-                    })()}
+                          return (
+                            <Button
+                              key={template}
+                              type="button"
+                              variant={isSelected ? "default" : "secondary"}
+                              size="sm"
+                              className="text-xs h-7 rounded-full transition-all"
+                              onClick={() =>
+                                editing &&
+                                setEditing({
+                                  ...editing,
+                                  // Сбрасываем выбор при повторном клике (toggle)
+                                  system: isSelected ? "" : template,
+                                })
+                              }
+                            >
+                              {template}
+                            </Button>
+                          );
+                        });
+                      })()}
+                    </div>
+                  )}
+                </div>
+
+                {/* Выбор помещений */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Привязка к помещениям</Label>
+                    <Button
+                      type="button"
+                      variant={isAllSelected ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={toggleAllRooms}
+                      disabled={availableRooms.length === 0}
+                      className={cn(
+                        "h-8 text-xs px-2",
+                        isAllSelected && "opacity-70",
+                      )}
+                    >
+                      {isAllSelected ? "Снять все" : "Выбрать все"}
+                    </Button>
                   </div>
-                )}
-              </div>
 
-              {/* Выбор помещений */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Привязка к помещениям</Label>
-                  <Button
-                    type="button"
-                    variant={isAllSelected ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={toggleAllRooms}
-                    disabled={availableRooms.length === 0}
-                    className={cn(
-                      "h-8 text-xs px-2",
-                      isAllSelected && "opacity-70",
-                    )}
-                  >
-                    {isAllSelected ? "Снять все" : "Выбрать все"}
-                  </Button>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {availableRooms.map((room) => {
-                    const isSelected = editing?.rooms.includes(room.name);
-                    return (
-                      <Button
-                        key={room.name}
-                        type="button"
-                        variant={isSelected ? "default" : "outline"}
-                        className="rounded-xl min-h-[36px] px-3 transition-colors text-sm"
-                        onClick={() => toggleRoom(room.name)}
-                      >
-                        {room.name}
-                      </Button>
-                    );
-                  })}
+                  <div className="flex flex-wrap gap-2">
+                    {availableRooms.map((room) => {
+                      const isSelected = editing?.rooms.includes(room.name);
+                      return (
+                        <Button
+                          key={room.name}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          className="rounded-xl min-h-[36px] px-3 transition-colors text-sm"
+                          onClick={() => toggleRoom(room.name)}
+                        >
+                          {room.name}
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </ResponsivePanel>
         </BriefBlockMain>
         <BottomButtonBlock onBack={onBack} />

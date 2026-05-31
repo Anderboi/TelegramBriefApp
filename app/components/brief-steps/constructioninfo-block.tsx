@@ -311,7 +311,7 @@ export default function ConstructionInfoBlock({
                         type="button"
                         variant="secondary"
                         onClick={() => handleOpenGuide(section.key)}
-                        className="//rounded-xl border border-dashed bg-secondary/50 text-sm h-auto w-full"
+                        className="//rounded-xl border border-dashed bg-secondary/50 text-sm h-auto w-full cursor-pointer"
                       >
                         📖 Помощь в выборе
                       </Button>

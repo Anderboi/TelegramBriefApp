@@ -32,6 +32,31 @@ export default function GuideContent({
         } else if (category === "ceiling") {
           const mod = await import("@/lib/guides/ceiling");
           data = mod.ceilingGuide;
+        } else if (category === "heatingSystem") {
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.heatingGuide;
+        } else if (category === "conditioningSystem") {
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.conditioningGuide;
+        } else if (category === "purificationSystem") {
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.purificationGuide;
+        } else if (
+          category === "warmFloorSystem" ||
+          category === "warmFloorRooms"
+        ) {
+          // Зависит от того, какой ключ у вас используется в форме
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.warmFloorGuide;
+        } else if (category === "electricSystem") {
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.electricGuide;
+        } else if (
+          category === "waterSystem" ||
+          category === "plumbingSystem"
+        ) {
+          const mod = await import("@/lib/guides/engineering");
+          data = mod.waterGuide;
         }
 
         if (isMounted) setItems(data);
@@ -137,7 +162,8 @@ export default function GuideContent({
 
           {/* Интерактивность: Кнопка выбора */}
           <Button className="w-full mt-2" onClick={() => onSelect(item.title)}>
-            Выбрать {item.title.toLowerCase()}
+            Выбрать 
+            {/* {item.title.toLowerCase()} */}
           </Button>
         </div>
       ))}
