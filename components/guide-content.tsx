@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Check, Minus } from "lucide-react";
 import { GuideItem } from "@/lib/schemas/guide";
 import { Button } from "@/components/ui/button";
 
@@ -27,10 +26,10 @@ export default function GuideContent({
         let data: GuideItem[] = [];
         // Динамический импорт нужного файла в зависимости от открытой категории
         if (category === "floor") {
-          const mod = await import("@/lib/guides/floor");
+          const mod = await import("@/lib/guides/construction");
           data = mod.floorGuide;
         } else if (category === "ceiling") {
-          const mod = await import("@/lib/guides/ceiling");
+          const mod = await import("@/lib/guides/construction");
           data = mod.ceilingGuide;
         } else if (category === "heatingSystem") {
           const mod = await import("@/lib/guides/engineering");
@@ -51,12 +50,6 @@ export default function GuideContent({
         } else if (category === "electricSystem") {
           const mod = await import("@/lib/guides/engineering");
           data = mod.electricGuide;
-        } else if (
-          category === "waterSystem" ||
-          category === "plumbingSystem"
-        ) {
-          const mod = await import("@/lib/guides/engineering");
-          data = mod.waterGuide;
         }
 
         if (isMounted) setItems(data);
@@ -78,7 +71,7 @@ export default function GuideContent({
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-muted-foreground space-y-3">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <p className="text-sm">Загрузка справочника...</p>
       </div>
     );
@@ -97,12 +90,12 @@ export default function GuideContent({
       {items.map((item) => (
         <div
           key={item.id}
-          className="border rounded-2xl p-5 bg-card shadow-sm space-y-4"
+          className="border rounded-2xl p-5 bg-card space-y-4"
         >
           {/* Заголовок и теги */}
           <div>
             <div className="flex items-center justify-between gap-2">
-              <h4 className="font-semibold text-lg">{item.title}</h4>
+              <h4 className="font-semibold leading-6 text-lg">{item.title}</h4>
               <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded font-medium shrink-0">
                 {item.priceRange}
               </span>
@@ -127,42 +120,42 @@ export default function GuideContent({
           </p>
 
           {/* Плюсы и минусы */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-secondary/20 p-3 rounded-xl">
-            <div>
-              <span className="font-medium text-emerald-600 flex items-center gap-1.5 mb-2">
+          <>
+            <div className="grid grid-cols-1  gap-4 text-sm bg-green-50/50 text-green-900/80 //bg-secondary/20 p-3 rounded-xl">
+              {/* <span className="font-medium text-emerald-600 flex items-center gap-1.5 mb-2">
                 <Check className="w-3.5 h-3.5" /> Плюсы
-              </span>
-              <ul className="space-y-1.5">
+              </span> */}
+              <ul className="space-y-1.5 ">
                 {item.pros.map((p, i) => (
                   <li
                     key={i}
-                    className="text-muted-foreground flex items-start text-xs leading-tight"
+                    className="text-foreground/80 flex items-start text-xs leading-tight"
                   >
-                    <span className="text-emerald-500 mr-1.5">•</span> {p}
+                    <span className="text-emerald-500 mr-1.5">+</span> {p}
                   </li>
                 ))}
               </ul>
             </div>
-            <div>
-              <span className="font-medium text-rose-600 flex items-center gap-1.5 mb-2">
+            <div className="grid grid-cols-1  gap-4 text-sm bg-red-50/50 text-red-900/80 p-3 rounded-xl">
+              {/* <span className="font-medium text-rose-600 flex items-center gap-1.5 mb-2">
                 <Minus className="w-3.5 h-3.5" /> Минусы
-              </span>
+              </span> */}
               <ul className="space-y-1.5">
                 {item.cons.map((c, i) => (
                   <li
                     key={i}
-                    className="text-muted-foreground flex items-start text-xs leading-tight"
+                    className="text-foreground/80 flex items-start text-xs leading-tight"
                   >
-                    <span className="text-rose-400 mr-1.5">•</span> {c}
+                    <span className="text-rose-400 mr-1.5">-</span> {c}
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+          </>
 
           {/* Интерактивность: Кнопка выбора */}
           <Button className="w-full mt-2" onClick={() => onSelect(item.title)}>
-            Выбрать 
+            Выбрать элемент
             {/* {item.title.toLowerCase()} */}
           </Button>
         </div>

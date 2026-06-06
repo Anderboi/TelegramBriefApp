@@ -25,6 +25,7 @@ import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import AddButton from "@/components/add-button";
 import { ResponsivePanel } from "@/components/responsive-panel";
 import GuideContent from "@/components/guide-content";
+import { CONSTRUCTION_SECTIONS } from '@/lib/constants';
 
 interface ConstructionFormProps {
   onNext: () => void;
@@ -33,50 +34,6 @@ interface ConstructionFormProps {
 
 type ConstructionCategory = keyof ConstructionFormValues;
 
-const SECTIONS: {
-  key: ConstructionCategory;
-  label: string;
-  templates: string[];
-}[] = [
-  {
-    key: "floor",
-    label: "Полы",
-    templates: [
-      "Керамогранит",
-      "Натуральный камень",
-      "Паркетная доска",
-      "Инженерная доска",
-      "Ламинат",
-      "Кварцвинил",
-      "Микроцемент",
-      "Ковролин",
-      "Наливной пол",
-    ],
-  },
-  {
-    key: "ceiling",
-    label: "Потолки",
-    templates: [
-      "Гипсокартонный",
-      "Натяжной",
-      "Под покраску",
-      "Реечный",
-      "Бетон (Лофт)",
-      "Подвесной",
-    ],
-  },
-  {
-    key: "walls",
-    label: "Стены",
-    templates: [
-      "Покраска",
-      "Обои",
-      "Декоративная штукатурка",
-      "Панели",
-      "Микроцемент",
-    ],
-  },
-];
 
 interface EditingState {
   category: ConstructionCategory;
@@ -248,7 +205,7 @@ export default function ConstructionInfoBlock({
             </div>
           ) : (
             <Accordion type="multiple" className="w-full space-y-2">
-              {SECTIONS.map((section) => {
+              {CONSTRUCTION_SECTIONS.map((section) => {
                 const items = form.watch(section.key) || [];
                 return (
                   <AccordionItem
@@ -335,6 +292,7 @@ export default function ConstructionInfoBlock({
             onClose={() =>
               panelState?.mode === "edit" ? saveDrawer() : setPanelState(null)
             }
+            footer={panelState?.mode === "edit"}
             title={
               panelState?.mode === "guide"
                 ? "Справочник материалов"
@@ -366,8 +324,9 @@ export default function ConstructionInfoBlock({
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {(() => {
                       const templates =
-                        SECTIONS.find((s) => s.key === editing?.category)
-                          ?.templates || [];
+                        CONSTRUCTION_SECTIONS.find(
+                          (s) => s.key === editing?.category,
+                        )?.templates || [];
                       const currentMaterial = editing?.material?.trim() || "";
 
                       return templates.map((t) => {

@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import {
-  ENGINEERING_OPTIONS,
   EngineeringSystemsSchema,
   EngineeringSystemsType,
 } from "@/lib/schemas";
@@ -29,6 +28,7 @@ import BottomButtonBlock from "@/components/ui/bottom-button-block";
 import AddButton from "@/components/add-button";
 import { ResponsivePanel } from "@/components/responsive-panel";
 import GuideContent from "@/components/guide-content";
+import { ENGINEERING_OPTIONS } from '@/lib/constants';
 
 interface EngineeringFormProps {
   onNext: () => void;
@@ -245,7 +245,7 @@ export default function EngineeringBlock({
                   <AccordionItem
                     value={cat.key}
                     key={cat.key}
-                    className="rounded-2xl px-4 shadow-lg bg-card"
+                    className="rounded-3xl px-4 bg-card"
                   >
                     <AccordionTrigger className="hover:no-underline py-4">
                       <div className="flex items-center justify-between w-full pr-4">
@@ -329,6 +329,7 @@ export default function EngineeringBlock({
                   ? "Добавление системы"
                   : "Редактирование системы"
             }
+            footer={panelState?.mode === "edit"}
             open={!!panelState}
             onClose={() =>
               panelState?.mode === "edit" ? saveDrawer() : setPanelState(null)
