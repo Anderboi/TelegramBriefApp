@@ -14,7 +14,7 @@ const BottomButtonBlock = ({
         <Button
           variant="ghost"
           type="button"
-          className="max-sm:rounded-full"
+          className="max-sm:rounded-full cursor-pointer"
           onClick={onBack}
           disabled={false}
           size="lg"
@@ -23,7 +23,11 @@ const BottomButtonBlock = ({
           Назад
         </Button>
       )}
-      <Button type="submit" size="lg" className="flex-1 max-sm:rounded-full">
+      <Button
+        type="submit"
+        size="lg"
+        className="flex-1 max-sm:rounded-full cursor-pointer"
+      >
         {submitText}
       </Button>
     </div>

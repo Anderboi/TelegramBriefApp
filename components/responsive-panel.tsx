@@ -24,6 +24,7 @@ interface ResponsivePanelProps {
   onClose: () => void;
   title: string;
   isSaveDisabled?: boolean;
+  footer?: boolean
 }
 export function ResponsivePanel({
   children,
@@ -31,25 +32,28 @@ export function ResponsivePanel({
   open,
   onOpenChange,
   title,
-  isSaveDisabled
+  isSaveDisabled,
+  footer=true
 }: ResponsivePanelProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="sm:max-w-[400px]">
+        <SheetContent side="right" className="sm:max-w-[400px] bg-slate-50">
           <SheetHeader>
             <SheetTitle>{title}</SheetTitle>
           </SheetHeader>
           {children}
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button className="w-full //mb-20" onClick={onClose}>
-                Сохранить и закрыть
-              </Button>
-            </SheetClose>
-          </SheetFooter>
+          {footer && (
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button className="w-full //mb-20" onClick={onClose}>
+                  Сохранить и закрыть
+                </Button>
+              </SheetClose>
+            </SheetFooter>
+          )}
         </SheetContent>
       </Sheet>
     );
@@ -62,7 +66,7 @@ export function ResponsivePanel({
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
         {children}
-        <DrawerFooter>
+        {footer && <DrawerFooter>
           <DrawerClose asChild>
             <Button
               className="w-full mb-20"
@@ -72,7 +76,7 @@ export function ResponsivePanel({
               Сохранить и закрыть
             </Button>
           </DrawerClose>
-        </DrawerFooter>
+        </DrawerFooter>}
       </DrawerContent>
     </Drawer>
   );
